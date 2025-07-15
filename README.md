@@ -29,7 +29,7 @@ The base configuration file can be found at `config/base.yaml`. Set the value of
 ### Training dataset
 
 The training set is relatively large, so it needs to be downloaded separately if needed. 
-The dataset can be found at [REFERENCE].
+The dataset is available via Zenodo with doi: 10.5281/zenodo.15926601.
 Save the training dataset under `data/training_data` and make sure the uncompress the files before use.
 
 ## Usage
