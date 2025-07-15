@@ -30,7 +30,7 @@ The base configuration file can be found at `config/base.yaml`. Set the value of
 
 The training set is relatively large, so it needs to be downloaded separately if needed. 
 The dataset can be found at [REFERENCE].
-Make sure the uncompress the files before use.
+Save the training dataset under `data/training_data` and make sure the uncompress the files before use.
 
 ## Usage
 
