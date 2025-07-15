@@ -31,10 +31,12 @@ To be able to run simulations with the C<sub>4</sub> kinetic model from within P
 
 The base configuration file can be found at `config/base.yaml`. Set the value of `base_dir` to the absolute path of the C4TUNE directory: `/path/to/C4TUNE`.
 
-### Training dataset
+### Training dataset 
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15926601.svg)](https://doi.org/10.5281/zenodo.15926601)
 
 The training set is relatively large, so it needs to be downloaded separately if needed.<br>
-The dataset is available via Zenodo with doi: 10.5281/zenodo.15926601.<br>
+The dataset is available at Zenodo with doi: 10.5281/zenodo.15926601.<br>
 Save the training dataset under `data/training_data` and make sure the uncompress the files before use.<br>
 
 ## Usage
