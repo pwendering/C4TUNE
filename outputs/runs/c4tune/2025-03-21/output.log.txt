@@ -1,0 +1,904 @@
+Epoch 3
+ -------------------------------
+loss (combined_loss): 3.3105 [8     /611844]
+loss (combined_loss): 3.1888 [80008 /611844]
+loss (combined_loss): 3.1524 [160008/611844]
+loss (combined_loss): 3.1931 [240008/611844]
+loss (combined_loss): 3.2901 [320008/611844]
+loss (combined_loss): 3.2213 [400008/611844]
+loss (combined_loss): 3.3163 [480008/611844]
+loss (combined_loss): 3.2461 [560008/611844]
+Test error: combined_loss = 3.2779
+Test error: relative error (parameters) = 0.3377
+Test error: RMSE (parameters) = 17.6486
+Test error: MSE (simulation) = 0.1972
+lr: 0.00810000 -> 0.00715000
+Time: 1000.49 s
+
+Epoch 4
+ -------------------------------
+loss (combined_loss): 3.2431 [8     /611844]
+loss (combined_loss): 3.4378 [80008 /611844]
+loss (combined_loss): 3.1996 [160008/611844]
+loss (combined_loss): 3.3572 [240008/611844]
+loss (combined_loss): 3.1677 [320008/611844]
+loss (combined_loss): 3.1656 [400008/611844]
+loss (combined_loss): 3.2551 [480008/611844]
+loss (combined_loss): 3.2063 [560008/611844]
+Test error: combined_loss = 3.2629
+Test error: relative error (parameters) = 0.3373
+Test error: RMSE (parameters) = 17.5118
+Test error: MSE (simulation) = 0.1859
+lr: 0.00715000 -> 0.00620000
+Time: 997.34 s
+
+Epoch 5
+ -------------------------------
+loss (combined_loss): 3.3720 [8     /611844]
+loss (combined_loss): 3.1910 [80008 /611844]
+loss (combined_loss): 3.1327 [160008/611844]
+loss (combined_loss): 3.1394 [240008/611844]
+loss (combined_loss): 3.1975 [320008/611844]
+loss (combined_loss): 3.2015 [400008/611844]
+loss (combined_loss): 3.4426 [480008/611844]
+loss (combined_loss): 3.2668 [560008/611844]
+Test error: combined_loss = 3.2299
+Test error: relative error (parameters) = 0.3370
+Test error: RMSE (parameters) = 17.5079
+Test error: MSE (simulation) = 0.1553
+lr: 0.00620000 -> 0.00525000
+Time: 999.08 s
+
+Epoch 6
+ -------------------------------
+loss (combined_loss): 3.2222 [8     /611844]
+loss (combined_loss): 3.1644 [80008 /611844]
+loss (combined_loss): 3.1908 [160008/611844]
+loss (combined_loss): 3.1928 [240008/611844]
+loss (combined_loss): 3.2115 [320008/611844]
+loss (combined_loss): 3.3199 [400008/611844]
+loss (combined_loss): 3.3017 [480008/611844]
+loss (combined_loss): 3.1740 [560008/611844]
+Test error: combined_loss = 3.2456
+Test error: relative error (parameters) = 0.3366
+Test error: RMSE (parameters) = 17.5427
+Test error: MSE (simulation) = 0.1752
+lr: 0.00525000 -> 0.00430000
+Time: 1003.69 s
+
+Epoch 7
+ -------------------------------
+loss (combined_loss): 3.1866 [8     /611844]
+loss (combined_loss): 3.2023 [80008 /611844]
+loss (combined_loss): 3.1371 [160008/611844]
+loss (combined_loss): 3.1620 [240008/611844]
+loss (combined_loss): 3.1602 [320008/611844]
+loss (combined_loss): 3.0813 [400008/611844]
+loss (combined_loss): 3.2851 [480008/611844]
+loss (combined_loss): 3.1844 [560008/611844]
+Test error: combined_loss = 3.2050
+Test error: relative error (parameters) = 0.3366
+Test error: RMSE (parameters) = 17.5194
+Test error: MSE (simulation) = 0.1342
+lr: 0.00430000 -> 0.00335000
+Time: 996.55 s
+
+Epoch 8
+ -------------------------------
+loss (combined_loss): 3.0716 [8     /611844]
+loss (combined_loss): 3.1081 [80008 /611844]
+loss (combined_loss): 3.4522 [160008/611844]
+loss (combined_loss): 3.1089 [240008/611844]
+loss (combined_loss): 3.0627 [320008/611844]
+loss (combined_loss): 3.2402 [400008/611844]
+loss (combined_loss): 3.0903 [480008/611844]
+loss (combined_loss): 3.1381 [560008/611844]
+Test error: combined_loss = 3.2127
+Test error: relative error (parameters) = 0.3365
+Test error: RMSE (parameters) = 17.5215
+Test error: MSE (simulation) = 0.1428
+lr: 0.00335000 -> 0.00240000
+Time: 1000.60 s
+
+Epoch 9
+ -------------------------------
+loss (combined_loss): 3.1747 [8     /611844]
+loss (combined_loss): 3.1336 [80008 /611844]
+loss (combined_loss): 3.1901 [160008/611844]
+loss (combined_loss): 3.2680 [240008/611844]
+loss (combined_loss): 3.1376 [320008/611844]
+loss (combined_loss): 3.0622 [400008/611844]
+loss (combined_loss): 3.2000 [480008/611844]
+loss (combined_loss): 3.2158 [560008/611844]
+Test error: combined_loss = 3.2047
+Test error: relative error (parameters) = 0.3364
+Test error: RMSE (parameters) = 17.4717
+Test error: MSE (simulation) = 0.1358
+lr: 0.00240000 -> 0.00145000
+Time: 1002.93 s
+
+Epoch 10
+ -------------------------------
+loss (combined_loss): 3.2224 [8     /611844]
+loss (combined_loss): 3.1843 [80008 /611844]
+loss (combined_loss): 3.1100 [160008/611844]
+loss (combined_loss): 3.3086 [240008/611844]
+loss (combined_loss): 3.3684 [320008/611844]
+loss (combined_loss): 3.1678 [400008/611844]
+loss (combined_loss): 3.1919 [480008/611844]
+loss (combined_loss): 3.1275 [560008/611844]
+Test error: combined_loss = 3.1883
+Test error: relative error (parameters) = 0.3364
+Test error: RMSE (parameters) = 17.4845
+Test error: MSE (simulation) = 0.1193
+lr: 0.00145000 -> 0.00500000
+Time: 1001.71 s
+
+Epoch 11
+ -------------------------------
+loss (combined_loss): 3.2161 [8     /611844]
+loss (combined_loss): 3.0413 [80008 /611844]
+loss (combined_loss): 3.0686 [160008/611844]
+loss (combined_loss): 3.0950 [240008/611844]
+loss (combined_loss): 3.1266 [320008/611844]
+loss (combined_loss): 3.1103 [400008/611844]
+loss (combined_loss): 3.1449 [480008/611844]
+loss (combined_loss): 3.2118 [560008/611844]
+Test error: combined_loss = 3.2153
+Test error: relative error (parameters) = 0.3365
+Test error: RMSE (parameters) = 17.5115
+Test error: MSE (simulation) = 0.1455
+lr: 0.00500000 -> 0.00452500
+Time: 1002.25 s
+
+Epoch 12
+ -------------------------------
+loss (combined_loss): 3.2690 [8     /611844]
+loss (combined_loss): 3.2285 [80008 /611844]
+loss (combined_loss): 3.1546 [160008/611844]
+loss (combined_loss): 3.1439 [240008/611844]
+loss (combined_loss): 3.2836 [320008/611844]
+loss (combined_loss): 3.2238 [400008/611844]
+loss (combined_loss): 3.1000 [480008/611844]
+loss (combined_loss): 3.4994 [560008/611844]
+Test error: combined_loss = 3.2161
+Test error: relative error (parameters) = 0.3364
+Test error: RMSE (parameters) = 17.4401
+Test error: MSE (simulation) = 0.1469
+lr: 0.00452500 -> 0.00405000
+Time: 1002.31 s
+
+Epoch 13
+ -------------------------------
+loss (combined_loss): 3.2524 [8     /611844]
+loss (combined_loss): 3.1288 [80008 /611844]
+loss (combined_loss): 3.2597 [160008/611844]
+loss (combined_loss): 3.1861 [240008/611844]
+loss (combined_loss): 3.0578 [320008/611844]
+loss (combined_loss): 3.3742 [400008/611844]
+loss (combined_loss): 3.1037 [480008/611844]
+loss (combined_loss): 3.2743 [560008/611844]
+Test error: combined_loss = 3.2012
+Test error: relative error (parameters) = 0.3363
+Test error: RMSE (parameters) = 17.4783
+Test error: MSE (simulation) = 0.1333
+lr: 0.00405000 -> 0.00357500
+Time: 999.32 s
+
+Epoch 14
+ -------------------------------
+loss (combined_loss): 3.1723 [8     /611844]
+loss (combined_loss): 3.2573 [80008 /611844]
+loss (combined_loss): 3.2218 [160008/611844]
+loss (combined_loss): 3.2297 [240008/611844]
+loss (combined_loss): 3.1947 [320008/611844]
+loss (combined_loss): 3.3273 [400008/611844]
+loss (combined_loss): 3.1815 [480008/611844]
+loss (combined_loss): 3.1340 [560008/611844]
+Test error: combined_loss = 3.1957
+Test error: relative error (parameters) = 0.3363
+Test error: RMSE (parameters) = 17.4409
+Test error: MSE (simulation) = 0.1279
+lr: 0.00357500 -> 0.00310000
+Time: 999.12 s
+
+Epoch 15
+ -------------------------------
+loss (combined_loss): 3.4059 [8     /611844]
+loss (combined_loss): 3.3137 [80008 /611844]
+loss (combined_loss): 3.1825 [160008/611844]
+loss (combined_loss): 3.1302 [240008/611844]
+loss (combined_loss): 3.1224 [320008/611844]
+loss (combined_loss): 3.2125 [400008/611844]
+loss (combined_loss): 3.1699 [480008/611844]
+loss (combined_loss): 3.0786 [560008/611844]
+Test error: combined_loss = 3.1869
+Test error: relative error (parameters) = 0.3362
+Test error: RMSE (parameters) = 17.5015
+Test error: MSE (simulation) = 0.1195
+lr: 0.00310000 -> 0.00262500
+Time: 986.65 s
+
+Epoch 16
+ -------------------------------
+loss (combined_loss): 3.1907 [8     /611844]
+loss (combined_loss): 3.4329 [80008 /611844]
+loss (combined_loss): 3.3655 [160008/611844]
+loss (combined_loss): 3.1636 [240008/611844]
+loss (combined_loss): 3.3267 [320008/611844]
+loss (combined_loss): 3.1564 [400008/611844]
+loss (combined_loss): 3.1984 [480008/611844]
+loss (combined_loss): 3.0472 [560008/611844]
+Test error: combined_loss = 3.1987
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4735
+Test error: MSE (simulation) = 0.1327
+lr: 0.00262500 -> 0.00215000
+Time: 981.67 s
+
+Epoch 17
+ -------------------------------
+loss (combined_loss): 3.6623 [8     /611844]
+loss (combined_loss): 3.1719 [80008 /611844]
+loss (combined_loss): 3.1422 [160008/611844]
+loss (combined_loss): 3.1980 [240008/611844]
+loss (combined_loss): 3.1036 [320008/611844]
+loss (combined_loss): 3.2668 [400008/611844]
+loss (combined_loss): 3.1495 [480008/611844]
+loss (combined_loss): 3.1667 [560008/611844]
+Test error: combined_loss = 3.1864
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4684
+Test error: MSE (simulation) = 0.1198
+lr: 0.00215000 -> 0.00167500
+Time: 980.33 s
+
+Epoch 18
+ -------------------------------
+loss (combined_loss): 3.1235 [8     /611844]
+loss (combined_loss): 3.2187 [80008 /611844]
+loss (combined_loss): 3.1778 [160008/611844]
+loss (combined_loss): 3.0809 [240008/611844]
+loss (combined_loss): 3.2144 [320008/611844]
+loss (combined_loss): 3.2163 [400008/611844]
+loss (combined_loss): 3.1175 [480008/611844]
+loss (combined_loss): 3.2087 [560008/611844]
+Test error: combined_loss = 3.1817
+Test error: relative error (parameters) = 0.3362
+Test error: RMSE (parameters) = 17.5027
+Test error: MSE (simulation) = 0.1145
+lr: 0.00167500 -> 0.00120000
+Time: 980.68 s
+
+Epoch 19
+ -------------------------------
+loss (combined_loss): 3.1372 [8     /611844]
+loss (combined_loss): 3.1512 [80008 /611844]
+loss (combined_loss): 3.1297 [160008/611844]
+loss (combined_loss): 3.1554 [240008/611844]
+loss (combined_loss): 3.3381 [320008/611844]
+loss (combined_loss): 3.1672 [400008/611844]
+loss (combined_loss): 3.1133 [480008/611844]
+loss (combined_loss): 3.2201 [560008/611844]
+Test error: combined_loss = 3.1815
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4664
+Test error: MSE (simulation) = 0.1155
+lr: 0.00120000 -> 0.00072500
+Time: 981.97 s
+
+Epoch 20
+ -------------------------------
+loss (combined_loss): 3.1268 [8     /611844]
+loss (combined_loss): 3.1594 [80008 /611844]
+loss (combined_loss): 3.0933 [160008/611844]
+loss (combined_loss): 3.3131 [240008/611844]
+loss (combined_loss): 3.1266 [320008/611844]
+loss (combined_loss): 3.3680 [400008/611844]
+loss (combined_loss): 3.1726 [480008/611844]
+loss (combined_loss): 3.2051 [560008/611844]
+Test error: combined_loss = 3.1757
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4499
+Test error: MSE (simulation) = 0.1096
+lr: 0.00072500 -> 0.00250000
+Time: 981.54 s
+
+Epoch 21
+ -------------------------------
+loss (combined_loss): 3.1261 [8     /611844]
+loss (combined_loss): 3.2105 [80008 /611844]
+loss (combined_loss): 3.2001 [160008/611844]
+loss (combined_loss): 3.1558 [240008/611844]
+loss (combined_loss): 3.2452 [320008/611844]
+loss (combined_loss): 3.1903 [400008/611844]
+loss (combined_loss): 3.0512 [480008/611844]
+loss (combined_loss): 3.2348 [560008/611844]
+Test error: combined_loss = 3.1821
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4629
+Test error: MSE (simulation) = 0.1161
+lr: 0.00250000 -> 0.00226250
+Time: 979.90 s
+
+Epoch 22
+ -------------------------------
+loss (combined_loss): 3.3132 [8     /611844]
+loss (combined_loss): 3.1989 [80008 /611844]
+loss (combined_loss): 3.1114 [160008/611844]
+loss (combined_loss): 3.2679 [240008/611844]
+loss (combined_loss): 3.2369 [320008/611844]
+loss (combined_loss): 3.2065 [400008/611844]
+loss (combined_loss): 3.2302 [480008/611844]
+loss (combined_loss): 3.2725 [560008/611844]
+Test error: combined_loss = 3.1915
+Test error: relative error (parameters) = 0.3361
+Test error: RMSE (parameters) = 17.4335
+Test error: MSE (simulation) = 0.1254
+lr: 0.00226250 -> 0.00202500
+Time: 979.90 s
+
+Epoch 23
+ -------------------------------
+loss (combined_loss): 3.2435 [8     /611844]
+loss (combined_loss): 3.1575 [80008 /611844]
+loss (combined_loss): 3.0758 [160008/611844]
+loss (combined_loss): 3.1822 [240008/611844]
+loss (combined_loss): 3.2381 [320008/611844]
+loss (combined_loss): 3.1681 [400008/611844]
+loss (combined_loss): 3.0781 [480008/611844]
+loss (combined_loss): 3.2697 [560008/611844]
+Test error: combined_loss = 3.1782
+Test error: relative error (parameters) = 0.3360
+Test error: RMSE (parameters) = 17.4655
+Test error: MSE (simulation) = 0.1126
+lr: 0.00202500 -> 0.00178750
+Time: 980.27 s
+
+Epoch 24
+ -------------------------------
+loss (combined_loss): 3.1840 [8     /611844]
+loss (combined_loss): 3.1634 [80008 /611844]
+loss (combined_loss): 3.0712 [160008/611844]
+loss (combined_loss): 3.1668 [240008/611844]
+loss (combined_loss): 3.2130 [320008/611844]
+loss (combined_loss): 3.1433 [400008/611844]
+loss (combined_loss): 3.0497 [480008/611844]
+loss (combined_loss): 3.1350 [560008/611844]
+Test error: combined_loss = 3.1792
+Test error: relative error (parameters) = 0.3360
+Test error: RMSE (parameters) = 17.4357
+Test error: MSE (simulation) = 0.1135
+lr: 0.00178750 -> 0.00155000
+Time: 979.59 s
+
+Epoch 25
+ -------------------------------
+loss (combined_loss): 3.1919 [8     /611844]
+loss (combined_loss): 3.1953 [80008 /611844]
+loss (combined_loss): 3.0923 [160008/611844]
+loss (combined_loss): 3.0730 [240008/611844]
+loss (combined_loss): 3.2199 [320008/611844]
+loss (combined_loss): 3.1380 [400008/611844]
+loss (combined_loss): 3.1961 [480008/611844]
+loss (combined_loss): 3.2871 [560008/611844]
+Test error: combined_loss = 3.1783
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4351
+Test error: MSE (simulation) = 0.1140
+lr: 0.00155000 -> 0.00131250
+Time: 987.35 s
+
+Epoch 26
+ -------------------------------
+loss (combined_loss): 3.1627 [8     /611844]
+loss (combined_loss): 3.2320 [80008 /611844]
+loss (combined_loss): 3.1497 [160008/611844]
+loss (combined_loss): 3.1579 [240008/611844]
+loss (combined_loss): 3.1855 [320008/611844]
+loss (combined_loss): 3.2214 [400008/611844]
+loss (combined_loss): 3.1859 [480008/611844]
+loss (combined_loss): 3.1220 [560008/611844]
+Test error: combined_loss = 3.1748
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4316
+Test error: MSE (simulation) = 0.1101
+lr: 0.00131250 -> 0.00107500
+Time: 987.47 s
+
+Epoch 27
+ -------------------------------
+loss (combined_loss): 3.1471 [8     /611844]
+loss (combined_loss): 3.1412 [80008 /611844]
+loss (combined_loss): 3.2130 [160008/611844]
+loss (combined_loss): 3.1737 [240008/611844]
+loss (combined_loss): 3.1293 [320008/611844]
+loss (combined_loss): 3.1255 [400008/611844]
+loss (combined_loss): 3.1905 [480008/611844]
+loss (combined_loss): 3.1083 [560008/611844]
+Test error: combined_loss = 3.1736
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4744
+Test error: MSE (simulation) = 0.1089
+lr: 0.00107500 -> 0.00083750
+Time: 987.11 s
+
+Epoch 28
+ -------------------------------
+loss (combined_loss): 3.1766 [8     /611844]
+loss (combined_loss): 3.2934 [80008 /611844]
+loss (combined_loss): 3.1394 [160008/611844]
+loss (combined_loss): 3.2852 [240008/611844]
+loss (combined_loss): 3.0903 [320008/611844]
+loss (combined_loss): 3.2334 [400008/611844]
+loss (combined_loss): 3.1190 [480008/611844]
+loss (combined_loss): 3.0357 [560008/611844]
+Test error: combined_loss = 3.1733
+Test error: relative error (parameters) = 0.3360
+Test error: RMSE (parameters) = 17.4353
+Test error: MSE (simulation) = 0.1084
+lr: 0.00083750 -> 0.00060000
+Time: 979.95 s
+
+Epoch 29
+ -------------------------------
+loss (combined_loss): 3.1241 [8     /611844]
+loss (combined_loss): 3.2851 [80008 /611844]
+loss (combined_loss): 3.3025 [160008/611844]
+loss (combined_loss): 3.0396 [240008/611844]
+loss (combined_loss): 3.1786 [320008/611844]
+loss (combined_loss): 3.1758 [400008/611844]
+loss (combined_loss): 3.2438 [480008/611844]
+loss (combined_loss): 3.1044 [560008/611844]
+Test error: combined_loss = 3.1767
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4649
+Test error: MSE (simulation) = 0.1119
+lr: 0.00060000 -> 0.00036250
+Time: 980.56 s
+
+Epoch 30
+ -------------------------------
+loss (combined_loss): 3.2299 [8     /611844]
+loss (combined_loss): 3.2072 [80008 /611844]
+loss (combined_loss): 3.1774 [160008/611844]
+loss (combined_loss): 3.1999 [240008/611844]
+loss (combined_loss): 3.1515 [320008/611844]
+loss (combined_loss): 3.1373 [400008/611844]
+loss (combined_loss): 3.2563 [480008/611844]
+loss (combined_loss): 3.2313 [560008/611844]
+Test error: combined_loss = 3.1717
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4757
+Test error: MSE (simulation) = 0.1076
+lr: 0.00036250 -> 0.00125000
+Time: 978.05 s
+
+#=======================================================================
+
+Epoch 36
+ -------------------------------
+loss (combined_loss): 3.1356 [8     /611844]
+loss (combined_loss): 3.1695 [80008 /611844]
+loss (combined_loss): 3.1260 [160008/611844]
+loss (combined_loss): 3.2111 [240008/611844]
+loss (combined_loss): 3.1430 [320008/611844]
+loss (combined_loss): 3.1616 [400008/611844]
+loss (combined_loss): 3.1331 [480008/611844]
+loss (combined_loss): 3.1098 [560008/611844]
+Test error: combined_loss = 3.1722
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4399
+Test error: MSE (simulation) = 0.1079
+lr: 0.00065625 -> 0.00053750
+Time: 1014.78 s
+
+Epoch 37
+ -------------------------------
+loss (combined_loss): 3.1973 [8     /611844]
+loss (combined_loss): 3.1329 [80008 /611844]
+loss (combined_loss): 3.1445 [160008/611844]
+loss (combined_loss): 3.0964 [240008/611844]
+loss (combined_loss): 3.1028 [320008/611844]
+loss (combined_loss): 3.1141 [400008/611844]
+loss (combined_loss): 3.0650 [480008/611844]
+loss (combined_loss): 3.1594 [560008/611844]
+Test error: combined_loss = 3.1698
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4382
+Test error: MSE (simulation) = 0.1054
+lr: 0.00053750 -> 0.00041875
+Time: 1017.09 s
+
+Epoch 38
+ -------------------------------
+loss (combined_loss): 3.0154 [8     /611844]
+loss (combined_loss): 3.0531 [80008 /611844]
+loss (combined_loss): 3.4973 [160008/611844]
+loss (combined_loss): 3.0374 [240008/611844]
+loss (combined_loss): 3.1333 [320008/611844]
+loss (combined_loss): 3.3065 [400008/611844]
+loss (combined_loss): 3.1385 [480008/611844]
+loss (combined_loss): 3.2676 [560008/611844]
+Test error: combined_loss = 3.1693
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4528
+Test error: MSE (simulation) = 0.1052
+lr: 0.00041875 -> 0.00030000
+Time: 1014.91 s
+
+Epoch 39
+ -------------------------------
+loss (combined_loss): 3.0908 [8     /611844]
+loss (combined_loss): 3.1929 [80008 /611844]
+loss (combined_loss): 3.2280 [160008/611844]
+loss (combined_loss): 3.1015 [240008/611844]
+loss (combined_loss): 3.0499 [320008/611844]
+loss (combined_loss): 3.0346 [400008/611844]
+loss (combined_loss): 3.0913 [480008/611844]
+loss (combined_loss): 3.1695 [560008/611844]
+Test error: combined_loss = 3.1696
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4356
+Test error: MSE (simulation) = 0.1056
+lr: 0.00030000 -> 0.00018125
+Time: 1015.72 s
+
+Epoch 40
+ -------------------------------
+loss (combined_loss): 3.1154 [8     /611844]
+loss (combined_loss): 3.1583 [80008 /611844]
+loss (combined_loss): 3.1660 [160008/611844]
+loss (combined_loss): 3.1373 [240008/611844]
+loss (combined_loss): 3.2775 [320008/611844]
+loss (combined_loss): 3.2981 [400008/611844]
+loss (combined_loss): 3.2041 [480008/611844]
+loss (combined_loss): 3.1476 [560008/611844]
+Test error: combined_loss = 3.1691
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4449
+Test error: MSE (simulation) = 0.1052
+lr: 0.00018125 -> 0.00062500
+Time: 1016.79 s
+
+Epoch 41
+ -------------------------------
+loss (combined_loss): 3.0954 [8     /611844]
+loss (combined_loss): 3.0672 [80008 /611844]
+loss (combined_loss): 3.1249 [160008/611844]
+loss (combined_loss): 3.1990 [240008/611844]
+loss (combined_loss): 3.1158 [320008/611844]
+loss (combined_loss): 3.1873 [400008/611844]
+loss (combined_loss): 3.0791 [480008/611844]
+loss (combined_loss): 3.1036 [560008/611844]
+Test error: combined_loss = 3.1703
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4431
+Test error: MSE (simulation) = 0.1062
+lr: 0.00062500 -> 0.00056563
+Time: 1016.67 s
+
+Epoch 42
+ -------------------------------
+loss (combined_loss): 4.2199 [8     /611844]
+loss (combined_loss): 3.0715 [80008 /611844]
+loss (combined_loss): 3.1793 [160008/611844]
+loss (combined_loss): 3.0722 [240008/611844]
+loss (combined_loss): 3.1622 [320008/611844]
+loss (combined_loss): 3.1179 [400008/611844]
+loss (combined_loss): 3.2072 [480008/611844]
+loss (combined_loss): 3.1790 [560008/611844]
+Test error: combined_loss = 3.1697
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4622
+Test error: MSE (simulation) = 0.1056
+lr: 0.00056563 -> 0.00050625
+Time: 1015.94 s
+
+Epoch 43
+ -------------------------------
+loss (combined_loss): 3.1711 [8     /611844]
+loss (combined_loss): 3.1973 [80008 /611844]
+loss (combined_loss): 3.8145 [160008/611844]
+loss (combined_loss): 3.0547 [240008/611844]
+loss (combined_loss): 3.1629 [320008/611844]
+loss (combined_loss): 3.2721 [400008/611844]
+loss (combined_loss): 3.1552 [480008/611844]
+loss (combined_loss): 3.1908 [560008/611844]
+Test error: combined_loss = 3.1692
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4271
+Test error: MSE (simulation) = 0.1052
+lr: 0.00050625 -> 0.00044688
+Time: 1016.95 s
+
+Epoch 44
+ -------------------------------
+loss (combined_loss): 3.2122 [8     /611844]
+loss (combined_loss): 3.1105 [80008 /611844]
+loss (combined_loss): 3.1604 [160008/611844]
+loss (combined_loss): 3.1155 [240008/611844]
+loss (combined_loss): 3.1431 [320008/611844]
+loss (combined_loss): 3.0832 [400008/611844]
+loss (combined_loss): 3.3487 [480008/611844]
+loss (combined_loss): 3.1960 [560008/611844]
+Test error: combined_loss = 3.1687
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4359
+Test error: MSE (simulation) = 0.1049
+lr: 0.00044688 -> 0.00038750
+Time: 1017.63 s
+
+Epoch 45
+ -------------------------------
+loss (combined_loss): 3.1766 [8     /611844]
+loss (combined_loss): 3.1967 [80008 /611844]
+loss (combined_loss): 3.1772 [160008/611844]
+loss (combined_loss): 3.2493 [240008/611844]
+loss (combined_loss): 3.1642 [320008/611844]
+loss (combined_loss): 3.0578 [400008/611844]
+loss (combined_loss): 3.1778 [480008/611844]
+loss (combined_loss): 3.2657 [560008/611844]
+Test error: combined_loss = 3.1703
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4386
+Test error: MSE (simulation) = 0.1067
+lr: 0.00038750 -> 0.00032813
+Time: 1016.69 s
+
+Epoch 46
+ -------------------------------
+loss (combined_loss): 3.2850 [8     /611844]
+loss (combined_loss): 3.1287 [80008 /611844]
+loss (combined_loss): 3.1688 [160008/611844]
+loss (combined_loss): 3.1390 [240008/611844]
+loss (combined_loss): 3.3075 [320008/611844]
+loss (combined_loss): 3.0648 [400008/611844]
+loss (combined_loss): 3.2122 [480008/611844]
+loss (combined_loss): 3.3717 [560008/611844]
+Test error: combined_loss = 3.1696
+Test error: relative error (parameters) = 0.3359
+Test error: RMSE (parameters) = 17.4694
+Test error: MSE (simulation) = 0.1054
+lr: 0.00032813 -> 0.00026875
+Time: 1016.14 s
+
+Epoch 47
+ -------------------------------
+loss (combined_loss): 3.0450 [8     /611844]
+loss (combined_loss): 3.1312 [80008 /611844]
+loss (combined_loss): 3.0326 [160008/611844]
+loss (combined_loss): 3.1640 [240008/611844]
+loss (combined_loss): 3.2295 [320008/611844]
+loss (combined_loss): 3.2389 [400008/611844]
+loss (combined_loss): 3.2010 [480008/611844]
+loss (combined_loss): 3.0182 [560008/611844]
+Test error: combined_loss = 3.1688
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4472
+Test error: MSE (simulation) = 0.1052
+lr: 0.00026875 -> 0.00020938
+Time: 1016.94 s
+
+Epoch 48
+ -------------------------------
+loss (combined_loss): 3.1176 [8     /611844]
+loss (combined_loss): 3.1489 [80008 /611844]
+loss (combined_loss): 3.1090 [160008/611844]
+loss (combined_loss): 3.2659 [240008/611844]
+loss (combined_loss): 3.1911 [320008/611844]
+loss (combined_loss): 3.3676 [400008/611844]
+loss (combined_loss): 3.2010 [480008/611844]
+loss (combined_loss): 3.0739 [560008/611844]
+Test error: combined_loss = 3.1684
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4436
+Test error: MSE (simulation) = 0.1046
+lr: 0.00020938 -> 0.00015000
+Time: 1025.77 s
+
+Epoch 49
+ -------------------------------
+loss (combined_loss): 3.2671 [8     /611844]
+loss (combined_loss): 3.1237 [80008 /611844]
+loss (combined_loss): 3.1649 [160008/611844]
+loss (combined_loss): 3.0233 [240008/611844]
+loss (combined_loss): 3.1077 [320008/611844]
+loss (combined_loss): 3.2443 [400008/611844]
+loss (combined_loss): 3.1546 [480008/611844]
+loss (combined_loss): 3.3491 [560008/611844]
+Test error: combined_loss = 3.1682
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4387
+Test error: MSE (simulation) = 0.1045
+lr: 0.00015000 -> 0.00009063
+Time: 1015.30 s
+
+Epoch 50
+ -------------------------------
+loss (combined_loss): 3.2571 [8     /611844]
+loss (combined_loss): 3.1663 [80008 /611844]
+loss (combined_loss): 3.1605 [160008/611844]
+loss (combined_loss): 3.3071 [240008/611844]
+loss (combined_loss): 3.1227 [320008/611844]
+loss (combined_loss): 3.0683 [400008/611844]
+loss (combined_loss): 3.3464 [480008/611844]
+loss (combined_loss): 3.2464 [560008/611844]
+Test error: combined_loss = 3.1675
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4447
+Test error: MSE (simulation) = 0.1039
+lr: 0.00009063 -> 0.00031250
+Time: 1015.38 s
+
+Epoch 51
+ -------------------------------
+loss (combined_loss): 3.2223 [8     /611844]
+loss (combined_loss): 3.2974 [80008 /611844]
+loss (combined_loss): 3.3567 [160008/611844]
+loss (combined_loss): 3.1498 [240008/611844]
+loss (combined_loss): 3.1993 [320008/611844]
+loss (combined_loss): 3.1517 [400008/611844]
+loss (combined_loss): 3.1456 [480008/611844]
+loss (combined_loss): 3.0286 [560008/611844]
+Test error: combined_loss = 3.1683
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4530
+Test error: MSE (simulation) = 0.1045
+lr: 0.00031250 -> 0.00028281
+Time: 1019.64 s
+
+Epoch 52
+ -------------------------------
+loss (combined_loss): 3.1201 [8     /611844]
+loss (combined_loss): 3.1566 [80008 /611844]
+loss (combined_loss): 3.1745 [160008/611844]
+loss (combined_loss): 3.1104 [240008/611844]
+loss (combined_loss): 3.0821 [320008/611844]
+loss (combined_loss): 3.0603 [400008/611844]
+loss (combined_loss): 3.2121 [480008/611844]
+loss (combined_loss): 3.1120 [560008/611844]
+Test error: combined_loss = 3.1687
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4525
+Test error: MSE (simulation) = 0.1051
+lr: 0.00028281 -> 0.00025313
+Time: 1020.16 s
+
+Epoch 53
+ -------------------------------
+loss (combined_loss): 3.2058 [8     /611844]
+loss (combined_loss): 3.0770 [80008 /611844]
+loss (combined_loss): 3.1094 [160008/611844]
+loss (combined_loss): 3.0831 [240008/611844]
+loss (combined_loss): 3.2221 [320008/611844]
+loss (combined_loss): 3.0669 [400008/611844]
+loss (combined_loss): 3.1962 [480008/611844]
+loss (combined_loss): 3.1939 [560008/611844]
+Test error: combined_loss = 3.1680
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4425
+Test error: MSE (simulation) = 0.1043
+lr: 0.00025313 -> 0.00022344
+Time: 1025.88 s
+
+Epoch 54
+ -------------------------------
+loss (combined_loss): 3.1866 [8     /611844]
+loss (combined_loss): 3.1468 [80008 /611844]
+loss (combined_loss): 3.1777 [160008/611844]
+loss (combined_loss): 3.2055 [240008/611844]
+loss (combined_loss): 3.3033 [320008/611844]
+loss (combined_loss): 3.1230 [400008/611844]
+loss (combined_loss): 3.0083 [480008/611844]
+loss (combined_loss): 3.1009 [560008/611844]
+Test error: combined_loss = 3.1680
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4444
+Test error: MSE (simulation) = 0.1043
+lr: 0.00022344 -> 0.00019375
+Time: 1018.22 s
+
+Epoch 55
+ -------------------------------
+loss (combined_loss): 3.1645 [8     /611844]
+loss (combined_loss): 3.2673 [80008 /611844]
+loss (combined_loss): 3.2319 [160008/611844]
+loss (combined_loss): 3.1468 [240008/611844]
+loss (combined_loss): 3.1220 [320008/611844]
+loss (combined_loss): 3.0872 [400008/611844]
+loss (combined_loss): 3.1270 [480008/611844]
+loss (combined_loss): 3.1012 [560008/611844]
+Test error: combined_loss = 3.1682
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4430
+Test error: MSE (simulation) = 0.1048
+lr: 0.00019375 -> 0.00016406
+Time: 1016.22 s
+
+Epoch 56
+ -------------------------------
+loss (combined_loss): 3.1919 [8     /611844]
+loss (combined_loss): 3.2684 [80008 /611844]
+loss (combined_loss): 3.2045 [160008/611844]
+loss (combined_loss): 3.1883 [240008/611844]
+loss (combined_loss): 3.0711 [320008/611844]
+loss (combined_loss): 3.2074 [400008/611844]
+loss (combined_loss): 3.1313 [480008/611844]
+loss (combined_loss): 3.0915 [560008/611844]
+Test error: combined_loss = 3.1681
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4485
+Test error: MSE (simulation) = 0.1044
+lr: 0.00016406 -> 0.00013438
+Time: 1020.60 s
+
+Epoch 57
+ -------------------------------
+loss (combined_loss): 3.1718 [8     /611844]
+loss (combined_loss): 3.1765 [80008 /611844]
+loss (combined_loss): 3.1349 [160008/611844]
+loss (combined_loss): 3.1183 [240008/611844]
+loss (combined_loss): 3.4160 [320008/611844]
+loss (combined_loss): 3.2003 [400008/611844]
+loss (combined_loss): 3.1774 [480008/611844]
+loss (combined_loss): 3.1353 [560008/611844]
+Test error: combined_loss = 3.1679
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4327
+Test error: MSE (simulation) = 0.1044
+lr: 0.00013438 -> 0.00010469
+Time: 1018.62 s
+
+Epoch 58
+ -------------------------------
+loss (combined_loss): 3.1051 [8     /611844]
+loss (combined_loss): 3.1711 [80008 /611844]
+loss (combined_loss): 3.0050 [160008/611844]
+loss (combined_loss): 3.2991 [240008/611844]
+loss (combined_loss): 3.0121 [320008/611844]
+loss (combined_loss): 3.1574 [400008/611844]
+loss (combined_loss): 3.1150 [480008/611844]
+loss (combined_loss): 3.1484 [560008/611844]
+Test error: combined_loss = 3.1680
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4520
+Test error: MSE (simulation) = 0.1044
+lr: 0.00010469 -> 0.00007500
+Time: 1021.34 s
+
+Epoch 59
+ -------------------------------
+loss (combined_loss): 3.1218 [8     /611844]
+loss (combined_loss): 3.0853 [80008 /611844]
+loss (combined_loss): 3.0346 [160008/611844]
+loss (combined_loss): 3.1767 [240008/611844]
+loss (combined_loss): 3.1006 [320008/611844]
+loss (combined_loss): 3.0910 [400008/611844]
+loss (combined_loss): 3.1519 [480008/611844]
+loss (combined_loss): 3.0951 [560008/611844]
+Test error: combined_loss = 3.1673
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4512
+Test error: MSE (simulation) = 0.1037
+lr: 0.00007500 -> 0.00004531
+Time: 1022.41 s
+
+Epoch 60
+ -------------------------------
+loss (combined_loss): 3.1822 [8     /611844]
+loss (combined_loss): 3.1835 [80008 /611844]
+loss (combined_loss): 3.0883 [160008/611844]
+loss (combined_loss): 3.2091 [240008/611844]
+loss (combined_loss): 3.4259 [320008/611844]
+loss (combined_loss): 3.1323 [400008/611844]
+loss (combined_loss): 3.1615 [480008/611844]
+loss (combined_loss): 3.1428 [560008/611844]
+Test error: combined_loss = 3.1673
+Test error: relative error (parameters) = 0.3358
+Test error: RMSE (parameters) = 17.4504
+Test error: MSE (simulation) = 0.1037
+lr: 0.00004531 -> 0.00015625
+Time: 1023.79 s
+
+Done

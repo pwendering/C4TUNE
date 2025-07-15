@@ -1,0 +1,11 @@
+,accuracy,f1,precision,recall,matthews_corrcoef
+0,Q32,Q32,Q32,Q32,Q32
+1,Vm6,Vm6,Vm6,Vm6,Vm6
+2,X32,X32,X32,X32,X32
+3,Vm2,Vm2,Vm2,Vm2,Vm2
+4,Vm26,Vm26,Vm26,BBslope,Vm26
+5,Y32,Y32,Y32,Y32,Y32
+6,BBslope,BBslope,Ki57,Vm26,BBslope
+7,Ki57,Ki57,BBslope,Vm51,Ki57
+8,Vm51,Vm51,Vm51,BBintercept,Vm51
+9,BBintercept,BBintercept,BBintercept,Vm19_20,BBintercept

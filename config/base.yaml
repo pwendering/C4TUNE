@@ -1,0 +1,49 @@
+paths:
+  base_dir: "/usr/bin/C4TUNE"
+  runs_base_dir: "${paths.base_dir}/outputs/runs/"
+  data_dir: "${paths.base_dir}/data/training_data"
+  matlab_code_dir:"${paths.base_dir}/matlab/C4_dynamic_model/simulation"
+  datasets:
+    a_co2: "${paths.data_dir}/a_co2.csv"
+    a_light: "${paths.data_dir}/a_light.csv"
+    light_a_co2: "${paths.data_dir}/light_a_co2.txt"
+    co2_a_light: "${paths.data_dir}/co2_a_light.txt"
+    parameters: "${paths.data_dir}/params.csv"
+
+model:
+  n_params: 236
+  n_co2_steps: 11
+  n_light_steps: 6
+
+settings:
+  n_threads_torch: 4
+  
+training:
+  device: "cpu"
+  rng_seed: 42
+  train_pct: 0.8
+  shuffle: true
+  learning_rate: 0.01
+  epochs: 10
+  start_epoch: 1
+  display_step: 10000
+  checkpoint_every: 5
+  batch_size: 8
+  linear_decay_factor: 0.1
+  linear_scheduler_step: 10
+  stepwise_decay_factor: 0.1
+  stepwise_scheduler_step: 10
+  weight_decay: 0
+  momentum: 0.5
+  nesterov: false
+  gradient_clipping: true
+  gradient_clipping_norm: 2.0
+  gradient_clipping_max: 1.0
+  reg_parameter: 1.0
+  loss_fn: "combined_loss"
+  
+tuning:
+  tune: false
+  n_threads: 4
+  
+hpc:

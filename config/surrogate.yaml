@@ -1,0 +1,31 @@
+paths:
+  run_dir: "${paths.runs_base_dir}/surrogate"
+  datasets:
+    train_idx: "${paths.data_dir}/train_idx_surrogate.npy"
+    test_idx: "${paths.data_dir}/test_idx_surrogate.npy"
+model:
+  name: "surrogate"
+  param_encoding_dim: 128
+  env_encoding_dim: 64
+  n_hidden: 3
+  activation_fun: "ReLU"
+  weight_init: null
+
+training:
+  rng_seed: 93
+  learning_rate: 0.0273204
+  weight_decay: 0
+  momentum: 0.776007
+  nesterov: true
+  linearlr_scheduler_steps: 15
+  f_lr: 0.0100639
+  steplr_scheduler_step_size: 15
+  steplr_gamma: 0.5
+  gradient_clipping_norm: 2.39349
+  loss_fn: "mse_monotonicity_loss"
+  epochs: 10
+  start_epoch: 1
+
+tuning:
+  tune: false
+  n_samples_ray: 50

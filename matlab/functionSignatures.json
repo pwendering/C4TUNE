@@ -1,0 +1,72 @@
+{
+    "configC4Sim":
+    {
+        "inputs":
+        [
+            {"name":"result_dir", "kind":"namevalue"},
+            {"name":"model_dir", "kind":"namevalue"},
+            {"name":"input_dir", "kind":"namevalue"},
+            {"name":"n_samples", "kind":"namevalue"},
+            {"name":"Ca_t", "kind":"namevalue"},
+            {"name":"Q_t", "kind":"namevalue"},
+            {"name":"ncpu", "kind":"namevalue"},
+            {"name":"use_cluster", "kind":"namevalue"},
+            {"name":"ke_flag", "kind":"namevalue"}
+        ]
+    },
+    "plotPhotRespCurve":
+    {
+        "inputs":
+        [
+            {"name":"Y", "kind":"required"},
+            {"name":"x_data", "kind":"required"},
+            {"name":"type", "kind":"namevalue",
+             "type":["char", "choices={'Ca', 'Ci', 'light', 'Q', 'T'}"]},
+            {"name":"x_label", "kind":"namevalue"},
+            {"name":"y_label", "kind":"namevalue"}
+        ]
+    },
+    "clusterCurves":
+    {
+        "inputs":
+        [
+            {"name":"data", "kind":"required", "type":["numeric"],
+             "purpose":"matrix with obervations in rows"},
+            {"name":"test_flag", "kind":"namevalue", "type":["logical"],
+             "purpose":"Whether to perform grid search for optimal settings"},
+            {"name":"n_replicates", "kind":"namevalue", "type":["numeric"],
+             "purpose":"Number of repetitions of K-means of K-medoids"},
+            {"name":"algorithm", "kind":"namevalue",
+             "type":["char", "choices={'kmeans', 'kmedoids'}"],
+             "purpose":"clustering algorithm"},
+            {"name":"kmed_alg", "kind":"namevalue",
+             "type":["char", "choices={[], 'pam', 'small', 'clara, 'large'}"],
+             "purpose":"algorithm choice for kmedoids"},
+            {"name":"transformation", "kind":"namevalue",
+             "type":["char", "choices={'lin', 'log', 'tsne', 'spectral', 'zscore', 'minmax', 'pca'}"],
+             "purpose":"data transformation"},
+            {"name":"K", "kind":"namevalue",
+             "type":["numeric"], "purpose":"number of clusters"},
+            {"name":"dist_method", "kind":"namevalue",
+             "type":["char", "choices={'euclidean', 'mahalanobis', 'cosine', 'correlation', 'spearman', 'sqeuclidean', 'cityblock'}"],
+             "purpose":"distance method"}
+        ]
+    },
+    "readC4Params":
+    {
+        "inputs":
+        [
+            {"name":"ke_type", "kind":"required", "type":["char", "string", "choices={'equilibrator', 'original'}"]}
+        ]
+    },
+    "createParameterSamples":
+    {
+        "inputs":
+        [
+            {"name":"N", "kind":"required", "type":["numeric"], "purpose":"number of samples"},
+            {"name":"X", "kind":"required", "type":["numeric"], "purpose":"feasible parameter points"},
+            {"name":"stype", "kind":"required", "type":["char", "string", "choices={'lognorm', 'cholesky'}"],
+             "purpose":"sampling type"}
+        ]
+    }
+}

@@ -1,0 +1,46 @@
+paths:
+  run_dir: "${paths.runs_base_dir}/c4tune"
+  surrogate_checkpoint: "${paths.runs_base_dir}/surrogate/2025_02_21/surrogate-epoch-60.pth"
+  cholesky_train: "${paths.data_dir}/L_train.csv"
+  cholesky_test: "${paths.data_dir}/L_test.csv"
+  datasets:
+    train_idx: "${paths.data_dir}/train_idx_c4tune.npy"
+    test_idx: "${paths.data_dir}/test_idx_c4tune.npy"
+  
+model:
+  name: "c4tune"
+  curve_encoder_hidden_dim: 128
+  curve_encoding_dim: 128
+  curve_fusion_dim: 64
+  param_pred_hidden_dim_1: 128
+  param_pred_hidden_dim_2: 256
+  weight_init: "Xavier"
+  surrogate:
+    param_encoding_dim: 128
+    env_encoding_dim: 64
+    n_hidden: 3
+    activation_fun: "ReLU"
+    weight_init: null
+    n_params: 236
+    n_co2_steps: 11
+    n_light_steps: 6
+
+training:
+  rng_seed: 42
+  learning_rate: 0.01
+  linear_decay_factor: 0.05
+  linear_scheduler_step: 10
+  stepwise_decay_factor: 0.5
+  stepwise_scheduler_step: 10
+  weight_decay: 0
+  momentum: 0.69582
+  gradient_clipping_norm: 2.47732
+  reg_parameter: 9.12299
+  loss_fn: "simulation_parameter_combined_loss"
+  epochs: 10
+  start_epoch: 1
+
+tuning:
+  tune: false
+  n_samples_ray: 50
+  

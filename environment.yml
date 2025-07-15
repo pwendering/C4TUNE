@@ -1,0 +1,18 @@
+name: c4tune
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python==3.10.14
+  - pytorch::pytorch
+  - pandas
+  - fsspec
+  - matplotlib=3.10
+  - scipy
+  - pip
+  - scikit-learn
+  - seaborn
+  - pingouin
+  - openpyxl
+  - fastcluster
+  - omegaconf
