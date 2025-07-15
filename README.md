@@ -16,29 +16,34 @@ Since the curve simulation using the Matlab implementation of the C<sub>4</sub> 
 ## Installation
 
 1) Clone the git repository
+   
 ```git clone https://github.com/pwendering/C4TUNE```
+
 2) Install the Python requirements in a virtual environment
+
 ```conda env create -f environment.yml```
 
 To be able to run simulations with the C<sub>4</sub> kinetic model from within Python, you also need to install the module `matlabengine`:
+
 ```pip install matlabengine```
 
 3) Set the path to the C4TUNE directory
+
 The base configuration file can be found at `config/base.yaml`. Set the value of `base_dir` to the absolute path of the C4TUNE directory: `/path/to/C4TUNE`.
 
 ### Training dataset
 
-The training set is relatively large, so it needs to be downloaded separately if needed. 
-The dataset is available via Zenodo with doi: 10.5281/zenodo.15926601.
-Save the training dataset under `data/training_data` and make sure the uncompress the files before use.
+The training set is relatively large, so it needs to be downloaded separately if needed.<br>
+The dataset is available via Zenodo with doi: 10.5281/zenodo.15926601.<br>
+Save the training dataset under `data/training_data` and make sure the uncompress the files before use.<br>
 
 ## Usage
 
 ### Python script
 Here is a snippet showing the minimal steps to carry out parameter predictions:
 
-The two input files `a_co2_measurements.csv` and `a_light_measurements.csv` contain the average experimental measurements.
-The rows contain the different genotypes or repetitions and the columns correspond to the different CO<sub>2</sub> or light steps, respectively.
+The two input files `a_co2_measurements.csv` and `a_light_measurements.csv` contain the average experimental measurements.<br>
+The rows contain the different genotypes or repetitions and the columns correspond to the different CO<sub>2</sub> or light steps, respectively.<br>
 The model was trained on a dataset that relied on a specific number and values of CO<sub>2</sub> and light levels. Therefore, the number of ambient CO<sub>2</sub> partial pressures must be 11 and the columns must correspond to measurements at 25, 75, 100, 200, 250, 300, 400, 600, 800, 1000, and 1250 µbar in this order. Equivalently, the columns in the file containing A/light curves must correspond to measurements at 50, 150, 300, 500, 1100, and 1800 µmol m<sup>-2</sup> s<sup>-1</sup>. The constant light intensity for the A/CO<sub>2</sub> curves must be 1800 µmol m<sup>-2</sup> s<sup>-1</sup> and the constant ambient CO<sub>2</sub> partial pressure for A/light curves must be 400 µbar.
 
 ```
@@ -107,10 +112,20 @@ curve_input = {
 pred_params = c4tune.predict(curve_input, env_input)
 
 ```
+
+### Command line
+[To be added]
+
 ### User interface
 [To be added]
 
 ## Re-training the model
+
+### Parameter sampling and curve simulation
 [To be added]
+
+### Neural network training
+[To be added]
+
 
 
