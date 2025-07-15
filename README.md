@@ -38,8 +38,8 @@ Make sure the uncompress the files before use.
 Here is a snippet showing the minimal steps to carry out parameter predictions:
 
 The two input files `a_co2_measurements.csv` and `a_light_measurements.csv` contain the average experimental measurements.
-The rows contain the different genotypes or repetitions and the columns correspond to the different CO<sub>2/sub> or light steps, respectively.
-The model was trained on a dataset that relied on a specific number and values of CO<sub>2</sub> and light levels. Therefore, the number of ambient CO<sub>2</sub> partial pressures must be 11 and the columns must correspond to measurements at 25, 75, 100, 200, 250, 300, 400, 600, 800, 1000, and 1250 µbar in this order. Equivalently, the columns in the file containing A/light curves must correspond to measurements at 50, 150, 300, 500, 1100, and 1800 µmol m<sup>-2</sup> s<sup>-1</sub>. The constant light intensity for the A/CO<sub>2</sub> curves must be 1800 µmol m<sup>-2</sup> s<sup>-1</sub> and the constant ambient CO<sub>2</sub> partial pressure for A/light curves must be 400 µbar.
+The rows contain the different genotypes or repetitions and the columns correspond to the different CO<sub>2</sub> or light steps, respectively.
+The model was trained on a dataset that relied on a specific number and values of CO<sub>2</sub> and light levels. Therefore, the number of ambient CO<sub>2</sub> partial pressures must be 11 and the columns must correspond to measurements at 25, 75, 100, 200, 250, 300, 400, 600, 800, 1000, and 1250 µbar in this order. Equivalently, the columns in the file containing A/light curves must correspond to measurements at 50, 150, 300, 500, 1100, and 1800 µmol m<sup>-2</sup> s<sup>-1</sup>. The constant light intensity for the A/CO<sub>2</sub> curves must be 1800 µmol m<sup>-2</sup> s<sup>-1</sup> and the constant ambient CO<sub>2</sub> partial pressure for A/light curves must be 400 µbar.
 
 ```
 import os
