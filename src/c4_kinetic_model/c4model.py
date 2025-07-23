@@ -40,8 +40,8 @@ class C4DynamicModel:
         a_co2 = np.array(a_co2_matlab)
         a_light = np.array(a_light_matlab)
     
-        a_co2 = a_co2[self.order_co2_steps].T
-        a_light = a_light[self.order_light_steps].T
+        a_co2 = a_co2[self.order_co2_steps]
+        a_light = a_light[self.order_light_steps]
     
         return a_co2.ravel(), a_light.ravel()
     
