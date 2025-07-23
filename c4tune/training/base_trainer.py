@@ -9,11 +9,11 @@ from torch import FloatTensor
 import torch.optim.lr_scheduler as lr_scheduler
 import os
 import time
-import tempfile
-from ray import train as raytrain
-from ray.train import Checkpoint
-from src.losses.losses import get_loss_function
-import src.training.saver as saver
+# import tempfile
+# from ray import train as raytrain
+# from ray.train import Checkpoint
+from c4tune.losses.losses import get_loss_function
+import c4tune.training.saver as saver
 from abc import ABC, abstractmethod
 
 
@@ -119,21 +119,21 @@ class BaseTrainer(ABC):
             print(f"Time: {tend-tstart:.2f} s\n")
             
             if self.config.tuning.tune:
+                pass
+                # # different checkpointing when running ray tune
                 
-                # different checkpointing when running ray tune
-                
-                with tempfile.TemporaryDirectory() as temp_checkpoint_dir:
-                    checkpoint = None
+                # with tempfile.TemporaryDirectory() as temp_checkpoint_dir:
+                #     checkpoint = None
                     
-                    if i % self.config.checkpoint_every == 0:
-                        torch.save(
-                            self.model.state_dict(),
-                            os.path.join(temp_checkpoint_dir,
-                                         f"{self.config.model.name}-epoch-{i}.pth")
-                            )
-                        checkpoint = Checkpoint.from_directory(temp_checkpoint_dir)
+                #     if i % self.config.checkpoint_every == 0:
+                #         torch.save(
+                #             self.model.state_dict(),
+                #             os.path.join(temp_checkpoint_dir,
+                #                          f"{self.config.model.name}-epoch-{i}.pth")
+                #             )
+                #         checkpoint = Checkpoint.from_directory(temp_checkpoint_dir)
                         
-                    raytrain.report(test_errors, checkpoint=checkpoint)
+                #     raytrain.report(test_errors, checkpoint=checkpoint)
             else:
                 if i % self.config.training.checkpoint_every == 0:
                     saver.checkpoint(

@@ -1,7 +1,7 @@
 
 import torch
 from omegaconf import OmegaConf
-from src.utils.paths import resolve_config_paths
+from c4tune.utils.paths import resolve_config_paths
 
 
 def set_training_environment(config):

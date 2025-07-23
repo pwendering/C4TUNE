@@ -5,7 +5,6 @@ Neural Network training
 '''
 
 import os
-from omegaconf import OmegaConf
 import torch
 from data.data import create_train_test_sets
 from models.model_surrogate import SurrogateModel

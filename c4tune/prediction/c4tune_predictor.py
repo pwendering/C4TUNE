@@ -1,7 +1,7 @@
 
 import torch
-from src.prediction.base_predictor import BasePredictor
-from src.utils.input_transform import prepare_model_inputs
+from c4tune.prediction.base_predictor import BasePredictor
+from c4tune.utils.input_transform import prepare_model_inputs
 import pandas as pd
 import numpy as np
 

@@ -1,5 +1,5 @@
 
-from src.data.data import PhotResponseDataset
+from c4tune.data.data import PhotResponseDataset
 import numpy as np
 from torch import FloatTensor
 

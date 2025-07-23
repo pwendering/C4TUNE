@@ -8,9 +8,9 @@ C4TUNE model trainer
 import numpy as np
 import torch
 from torch import FloatTensor
-from src.training.base_trainer import BaseTrainer
-from src.losses.losses import mean_relative_error_loss, SimulationLoss
-from src.utils.input_transform import prepare_model_inputs
+from c4tune.training.base_trainer import BaseTrainer
+from c4tune.losses.losses import mean_relative_error_loss, SimulationLoss
+from c4tune.utils.input_transform import prepare_model_inputs
 
 class C4tuneTrainer(BaseTrainer):
     

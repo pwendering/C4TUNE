@@ -1,5 +1,4 @@
 import os
-import sys
 from pathlib import Path
 import torch
 from torch import FloatTensor
@@ -9,15 +8,12 @@ import argparse
 from datetime import datetime
 from omegaconf import OmegaConf
 import json
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.models.model_c4tune import ParameterPredictionModel
-from src.prediction.c4tune_predictor import C4tunePredictor
-from src.utils.env_setup import set_training_environment, get_config
-from src.utils.utils import load_param_names
-from src.utils.paths import PROJECT_ROOT
-from src.data.data import PhotResponseDataset
+from c4tune.models.model_c4tune import ParameterPredictionModel
+from c4tune.prediction.c4tune_predictor import C4tunePredictor
+from c4tune.utils.env_setup import set_training_environment, get_config
+from c4tune.utils.utils import load_param_names
+from c4tune.utils.paths import PROJECT_ROOT
+from c4tune.data.data import PhotResponseDataset
 
 
 def process_input(a_co2_file, a_light_file, cache_file):

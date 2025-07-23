@@ -5,9 +5,9 @@ Surrogate model trainer
 """
 
 import torch
-from src.losses.losses import mse_loss, MSEMonotonicityLoss
-from src.utils.input_transform import prepare_model_inputs
-from src.training.base_trainer import BaseTrainer
+from c4tune.losses.losses import mse_loss, MSEMonotonicityLoss
+from c4tune.utils.input_transform import prepare_model_inputs
+from c4tune.training.base_trainer import BaseTrainer
 
 class SurrogateTrainer(BaseTrainer):
     
