@@ -9,8 +9,6 @@ correlation threshold at each CO2 or light level.
 """
 
 import os
-import sys
-from pathlib import Path
 import pandas as pd
 import numpy as np
 from scipy.cluster import hierarchy
@@ -21,16 +19,13 @@ from matplotlib.ticker import AutoLocator, FormatStrFormatter
 import seaborn as sns
 import fastcluster
 from omegaconf import OmegaConf
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.models.model_c4tune import ParameterPredictionModel
-from src.prediction.c4tune_predictor import C4tunePredictor
-from src.utils.env_setup import set_training_environment, get_config
-from src.utils.utils import load_param_names
-from src.data.data import PhotResponseDataset
-from src.c4_kinetic_model.c4model import C4DynamicModel
-from src.utils.paths import PROJECT_ROOT
+from c4tune.models.model_c4tune import ParameterPredictionModel
+from c4tune.prediction.c4tune_predictor import C4tunePredictor
+from c4tune.utils.env_setup import set_training_environment, get_config
+from c4tune.utils.utils import load_param_names
+from c4tune.data.data import PhotResponseDataset
+from c4tune.c4_kinetic_model.c4model import C4DynamicModel
+from c4tune.utils.paths import PROJECT_ROOT
 
 
 np.random.seed(123)
@@ -63,7 +58,7 @@ params_2023 = pd.read_csv(os.path.join(param_dir, "params_2023.csv"), index_col=
 
 #%% Create C4TUNE predictor
 
-c4tune_config_file = os.path.join(PROJECT_ROOT, "config/c4tune.yaml"
+c4tune_config_file = os.path.join(PROJECT_ROOT, "config/c4tune.yaml")
 config_c4tune = get_config(base_config_file, c4tune_config_file)
 
 c4tune_checkpoint = os.path.join(config_c4tune.paths.run_dir, "2025-03-21", "c4tune-epoch-60.pth")

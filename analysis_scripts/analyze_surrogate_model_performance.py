@@ -6,22 +6,17 @@ Assess the performance of the trained surrogate model.
 
 import torch
 import os
-import sys
-from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.inspection import PartialDependenceDisplay
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.models.model_surrogate import SurrogateModel
-from src.prediction.surrogate_predictor import SurrogatePredictor
-from src.utils.env_setup import set_training_environment, get_config
-from src.utils.utils import load_param_names
-from src.utils.paths import PROJECT_ROOT
-from src.data.data import PhotResponseDataset
+from c4tune.models.model_surrogate import SurrogateModel
+from c4tune.prediction.surrogate_predictor import SurrogatePredictor
+from c4tune.utils.env_setup import set_training_environment, get_config
+from c4tune.utils.utils import load_param_names
+from c4tune.utils.paths import PROJECT_ROOT
+from c4tune.data.data import PhotResponseDataset
 
 
 # =============================================================================

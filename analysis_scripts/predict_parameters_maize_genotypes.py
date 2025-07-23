@@ -3,27 +3,22 @@ Predict model parameters for genotypes of a MAGIC maize population
 """
 
 import os
-import sys
 import time
-from pathlib import Path
 import pandas as pd
 import numpy as np
 import torch
 from torch import FloatTensor
 import matplotlib.pyplot as plt
 from omegaconf import OmegaConf
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.models.model_c4tune import ParameterPredictionModel
-from src.prediction.c4tune_predictor import C4tunePredictor
-from src.models.model_surrogate import SurrogateModel
-from src.prediction.surrogate_predictor import SurrogatePredictor
-from src.utils.env_setup import set_training_environment, get_config
-from src.utils.utils import load_param_names
-from src.data.data import PhotResponseDataset
-from src.c4_kinetic_model.c4model import C4DynamicModel
-from src.utils.paths import PROJECT_ROOT, resolve_config_paths
+from c4tune.models.model_c4tune import ParameterPredictionModel
+from c4tune.prediction.c4tune_predictor import C4tunePredictor
+from c4tune.models.model_surrogate import SurrogateModel
+from c4tune.prediction.surrogate_predictor import SurrogatePredictor
+from c4tune.utils.env_setup import set_training_environment, get_config
+from c4tune.utils.utils import load_param_names
+from c4tune.data.data import PhotResponseDataset
+from c4tune.c4_kinetic_model.c4model import C4DynamicModel
+from c4tune.utils.paths import PROJECT_ROOT, resolve_config_paths
 
 
 np.random.seed(123)

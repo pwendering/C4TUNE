@@ -6,26 +6,21 @@ Assess the performance of the trained C4TUNE model.
 """
 
 import os
-import sys
-from pathlib import Path
 import torch
 from torch import FloatTensor
 import matplotlib.pyplot as plt
 from matplotlib import colors
 import numpy as np
 import pandas as pd
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.models.model_surrogate import SurrogateModel
-from src.models.model_c4tune import ParameterPredictionModel
-from src.prediction.surrogate_predictor import SurrogatePredictor
-from src.prediction.c4tune_predictor import C4tunePredictor
-from src.utils.env_setup import set_training_environment, get_config
-from src.utils.utils import load_param_names
-from src.data.data import PhotResponseDataset
-from src.utils.paths import PROJECT_ROOT
-from src.c4_kinetic_model.c4model import C4DynamicModel
+from c4tune.models.model_surrogate import SurrogateModel
+from c4tune.models.model_c4tune import ParameterPredictionModel
+from c4tune.prediction.surrogate_predictor import SurrogatePredictor
+from c4tune.prediction.c4tune_predictor import C4tunePredictor
+from c4tune.utils.env_setup import set_training_environment, get_config
+from c4tune.utils.utils import load_param_names
+from c4tune.data.data import PhotResponseDataset
+from c4tune.utils.paths import PROJECT_ROOT
+from c4tune.c4_kinetic_model.c4model import C4DynamicModel
 
 
 # font size for plotting

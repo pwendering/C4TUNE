@@ -6,8 +6,6 @@ predictions for the population of maize genotypes.
 """
 
 import os
-import sys
-from pathlib import Path
 import pandas as pd
 import numpy as np
 import torch
@@ -17,11 +15,8 @@ import pingouin
 from multiprocessing import Pool
 from functools import partial
 from omegaconf import OmegaConf
-
-sys.path.append(str(Path().resolve().parents[0]))
-
-from src.utils.utils import load_param_names
-from src.utils.paths import PROJECT_ROOT
+from c4tune.utils.utils import load_param_names
+from c4tune.utils.paths import PROJECT_ROOT
 
 
 def empirical_pvalue(corr_ref, p_idx, params, anet, n_samples_pval=1000):
