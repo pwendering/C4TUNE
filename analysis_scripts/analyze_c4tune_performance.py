@@ -24,7 +24,9 @@ from src.prediction.c4tune_predictor import C4tunePredictor
 from src.utils.env_setup import set_training_environment, get_config
 from src.utils.utils import load_param_names
 from src.data.data import PhotResponseDataset
+from src.utils.paths import PROJECT_ROOT
 from src.c4_kinetic_model.c4model import C4DynamicModel
+
 
 # font size for plotting
 plt.rc('font', size=14)
@@ -44,11 +46,11 @@ def calculate_relative_error(y, y_pred):
 # =============================================================================
 
 # get C4TUNE and surrogate model configurations
-base_config_file = "../config/base.yaml"
-c4tune_config_file = "../config/c4tune.yaml"
+base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
+c4tune_config_file = os.path.join("config/c4tune.yaml")
 config_c4tune = get_config(base_config_file, c4tune_config_file)
 
-surrogate_config_file = "../config/surrogate.yaml"
+surrogate_config_file = os.path.join(PROJECT_ROOT, "config/surrogate.yaml")
 config_surrogate = get_config(base_config_file, surrogate_config_file)
 
 # numpy random seed 
@@ -88,10 +90,10 @@ idx_samples = np.random.choice(idx_test,
                                replace=False)
 
 # data directory
-data_dir = os.path.join(config_c4tune.paths.base_dir, "data")
+data_dir = os.path.join(PROJECT_ROOT, "data")
 
 # output directory
-result_dir = os.path.join(config_c4tune.paths.base_dir, "results", "c4tune")
+result_dir = os.path.join(PROJECT_ROOT, "results", "c4tune")
 
 # =============================================================================
 #%% Predict parameters for random subset of the test set 
@@ -332,7 +334,7 @@ fig_c4tune_performance.savefig(
 #%% Relative error per parameter
 # =============================================================================
 
-param_names = load_param_names(config_c4tune)
+param_names = load_param_names()
 
 min_val = re.min().min()
 max_val = 1.1*re.max().max()

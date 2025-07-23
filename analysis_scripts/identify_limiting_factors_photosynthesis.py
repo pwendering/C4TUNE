@@ -30,7 +30,84 @@ from src.utils.env_setup import set_training_environment, get_config
 from src.utils.utils import load_param_names
 from src.data.data import PhotResponseDataset
 from src.c4_kinetic_model.c4model import C4DynamicModel
+from src.utils.paths import PROJECT_ROOT
 
+
+np.random.seed(123)
+torch.manual_seed(321)
+
+plt.rc('font', size=14)
+plt.rc('legend', fontsize=10)
+
+
+# load base configuration
+base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
+base_config = OmegaConf.load(base_config_file)
+
+result_dir = os.path.join(PROJECT_ROOT, "results",
+                         "analysis_limiting_factors", "test")
+param_dir = os.path.join(PROJECT_ROOT, "results",
+                         "parameter_prediction_maize_genotypes")
+data_dir = os.path.join(PROJECT_ROOT, "data",
+                         "anet_measurements")
+
+#%% Load experimental data
+a_co2_2022 = pd.read_csv(os.path.join(data_dir, "a_co2_maize_2022.csv"), index_col=0)
+a_co2_2023 = pd.read_csv(os.path.join(data_dir, "a_co2_maize_2023.csv"), index_col=0)
+a_light_2022 = pd.read_csv(os.path.join(data_dir, "a_light_maize_2022.csv"), index_col=0)
+a_light_2023 = pd.read_csv(os.path.join(data_dir, "a_light_maize_2023.csv"), index_col=0)
+
+#%% Load predicted parameters
+params_2022 = pd.read_csv(os.path.join(param_dir, "params_2022.csv"), index_col=0).to_numpy()
+params_2023 = pd.read_csv(os.path.join(param_dir, "params_2023.csv"), index_col=0).to_numpy()
+
+#%% Create C4TUNE predictor
+
+c4tune_config_file = os.path.join(PROJECT_ROOT, "config/c4tune.yaml"
+config_c4tune = get_config(base_config_file, c4tune_config_file)
+
+c4tune_checkpoint = os.path.join(config_c4tune.paths.run_dir, "2025-03-21", "c4tune-epoch-60.pth")
+
+# Load Cholesky decomposition matrix and change the model's property
+L = np.loadtxt(config_c4tune.paths.cholesky_test, delimiter=',')
+
+# create C4TUNE and surrogate model predictors
+set_training_environment(config_c4tune)
+device = torch.device(config_c4tune.training.device if torch.cuda.is_available() else "cpu")
+
+c4tune_model = ParameterPredictionModel(config_c4tune.model, L=FloatTensor(L))
+
+c4tune = C4tunePredictor(c4tune_model, c4tune_checkpoint, device, config_c4tune)
+
+#%% Load sampling results
+
+# read the dataset and indices of the test set
+dataset = PhotResponseDataset(config_c4tune.paths.datasets)
+idx_test = np.load(config_c4tune.paths.datasets.test_idx)
+co2_steps = np.array(dataset.a_co2.columns)
+light_steps = np.array(dataset.a_light.columns)
+n_co2 = len(co2_steps)
+n_light = len(light_steps)
+
+# parameter names
+param_names = load_param_names()
+param_ids = dataset.params.columns.values
+n_params = len(param_names)
+
+#%% C4 kinetic model
+
+# create Wrapper for C4 kinetic model simulation written in Matlab
+c4model = C4DynamicModel(base_config)
+
+#%% Correlation between steps of A/CO2 and A/light curves
+
+# pairwise Pearson correlation between steps of A/CO2 and A/light curves
+r_p_a_co2_2022 = np.corrcoef(a_co2_2022.T)
+r_p_a_light_2022 = np.corrcoef(a_light_2022.T)
+r_p_a_co2_2023 = np.corrcoef(a_co2_2023.T)
+r_p_a_light_2023 = np.corrcoef(a_light_2023.T)
+
+#%%  Pearson correlation between log-transformed parameters values and Anet 
 
 def find_relevant_correlations(corr_mat, t):
     is_high_corr = np.all(np.abs(corr_mat)>t, axis=1)
@@ -50,101 +127,77 @@ def add_indicator_high_corr(ax, corr, p_names, corr_threshold):
     ax.scatter(y+0.5, x+0.5, c="gray", s=3)
     return ax
 
-def simulate_parameter_updates(P, corr_mat, idx_relevant, idx_acc, c4model, p_all=None):
+def simulate_parameter_updates(P, corr_mat, idx_relevant, idx_acc,
+                               c4model, p_all=None):
     
     p_all_flag = p_all is not None
-        
+    
+    light_steps = [c4model.light_steps_simulation[i] for i in c4model.order_light_steps]
+    co2_steps = [c4model.co2_steps_simulation[i] for i in c4model.order_co2_steps]
+    
     n_targets = len(idx_relevant)
-    a_co2 = np.zeros((n_targets, len(c4model.co2_steps_simulation)))
-    a_light = np.zeros((n_targets, len(c4model.light_steps_simulation)))
+    a_co2 = np.zeros((n_targets, len(co2_steps)))
+    a_light = np.zeros((n_targets, len(light_steps)))
     
     for i in range(n_targets):
         
         # generate updated parameter set
         params_inc = P[idx_acc, :].copy()
-        if corr_mat[idx_relevant[i], :].min()<0:
-            if p_all_flag:
-                params_inc[idx_relevant[i]] = p_all[:, idx_relevant[i]].min()
-            else:
-                params_inc[idx_relevant[i]] = P[:, idx_relevant[i]].min()
+        
+        if type(idx_relevant[i]) == np.int64:
+            targets_i = [idx_relevant[i]]
+            use_max = False
         else:
-            if p_all_flag:
-                params_inc[idx_relevant[i]] = p_all[:, idx_relevant[i]].max()
+            targets_i = idx_relevant[i]
+            use_max = True  # for Vcmax/Vomax
+        
+        for j in range(len(targets_i)):
+            tmp_p_idx = targets_i[j]
+            if use_max:
+                if p_all_flag:
+                    params_inc[tmp_p_idx] = p_all[:, tmp_p_idx].max()
+                else:
+                    params_inc[tmp_p_idx] = P[:, tmp_p_idx].max()
+            elif corr_mat[tmp_p_idx, :].min()<0:
+                if p_all_flag:
+                    params_inc[tmp_p_idx] = p_all[:, tmp_p_idx].min()
+                else:
+                    params_inc[tmp_p_idx] = P[:, tmp_p_idx].min()
             else:
-                params_inc[idx_relevant[i]] = P[:, idx_relevant[i]].max()
+                if p_all_flag:
+                    params_inc[tmp_p_idx] = p_all[:, tmp_p_idx].max()
+                else:
+                    params_inc[tmp_p_idx] = P[:, tmp_p_idx].max()
 
         # Simulate A/CO2 and A/light curves
         aci_tmp, aq_tmp = c4model.simulate(params_inc.tolist())
         a_co2[i, :] = aci_tmp.copy()
         a_light[i, :] = aq_tmp.copy()
     
-    return a_co2, a_light
-
-def explore_parameter_range(p_acc, p_all, corr_mat, idx_relevant):
-    '''
-    Test improvement of changing a parameter in the direction of the correlation 
-    over a range of values.
-    '''
-    
-    n_steps = 10
-    
-    if corr_mat[idx_relevant, :].min()<0:
-        p_end = p_all[:, idx_relevant].min()
-    else:
-        p_end = p_all[:, idx_relevant].max()
-    steps = np.linspace(p_acc[idx_relevant], p_end, n_steps)
-    a_co2 = np.zeros((n_steps, len(c4model.light_steps_simulation)))
-    a_light = np.zeros((n_steps, len(c4model.co2_steps_simulation)))
-    
-    for i in range(n_steps):
-        
-        # generate updated parameter set
-        p_acc[idx_relevant] = steps[i]
-
-        # Simulate A/CO2 and A/light curves
-        aci_tmp, aq_tmp = c4model.simulate(p_acc.tolist())
-        a_co2[i, :] = aci_tmp[0, :].copy()
-        a_light[i, :] = aq_tmp[0, :].copy()
-        
-    return a_co2, a_light, steps   
+    return a_co2, a_light   
 
 def get_plot_idx(a_co2_ref, a_light_ref, a_co2_updated, a_light_updated):
-
     plot_idx = np.argmax(np.max(
         np.concatenate((a_co2_updated, a_light_updated), axis=1)
-               - np.concatenate((a_co2_ref, a_light_ref), axis=1), axis=1))
+               - np.concatenate((a_co2_ref, a_light_ref), axis=0).T, axis=1))
     return plot_idx
 
 def plot_updated_curves(ax, a_net_ref, a_net_updated, x_levels,
                         colors=['#377eb8', '#ff7f00', 'gray'], line_styles=['-', '--', '-']):
     
-    if len(a_net_ref.shape)==1:
-        a_net_ref = np.expand_dims(a_net_ref, 1)
-    
-    if len(a_net_updated.shape)==1:
-        a_net_updated = np.expand_dims(a_net_updated, 1)
-        
-    if len(x_levels.shape)==1:
-        x_levels = np.expand_dims(x_levels, 1)
-    
     # a_net_change = 100*(a_net_updated/a_net_ref.T-1)
     a_net_change = a_net_updated-a_net_ref.T
     
-    ax.plot(x_levels.T, a_net_ref, colors[0], linestyle=line_styles[0], linewidth=2)
-    ax.plot(x_levels.T, a_net_updated.T, colors[1], linestyle=line_styles[1], linewidth=2)  
+    ax.plot(x_levels, a_net_ref, colors[0], linestyle=line_styles[0], linewidth=2)
+    ax.plot(x_levels, a_net_updated, colors[1], linestyle=line_styles[1], linewidth=2)  
     
     ax_right = ax.twinx()
-    ax_right.plot(x_levels.T, a_net_change.T, colors[2], linestyle=line_styles[2],
+    ax_right.plot(x_levels, a_net_change.T, colors[2], linestyle=line_styles[2],
                   linewidth=2, alpha=0.5)
     
     ax.set_xlim(np.min(x_levels), np.max(x_levels))
     
     return ax, ax_right
-
-def add_letter(ax, letter):
-    ax.text(0.1, 0.87, letter, fontsize=10, ha='left', transform=ax.transAxes,
-            weight="bold")
-    return ax
 
 def create_result_df(P, param_names, corr_mat, idx_relevant, idx_acc, a_co2_change,
                      a_light_change, a_co2_diff, a_light_diff, all_params):
@@ -195,16 +248,13 @@ def get_percent_increase(a, b):
     return 100*(a/b-1)
 
 def plot_anet_improvements_targets_individual(
-        a_co2, a_light, pred_params, corr_a_co2, corr_a_light, 
+        a_co2, a_light, pred_params, c4model, corr_a_co2, corr_a_light, 
         idx_relevant_a_co2, idx_relevant_a_light, p_names,
-        co2_steps, light_steps, c4model, p_minmax=None, acc_performance='min'):
+        p_minmax=None, acc_performance='min'):
+        
+    light_steps = [c4model.light_steps_simulation[i] for i in c4model.order_light_steps]
+    co2_steps = [c4model.co2_steps_simulation[i] for i in c4model.order_co2_steps]
     
-    # convert steps into numeric arrays
-    co2_steps = np.array(co2_steps, dtype='int')
-    # co2_steps = np.expand_dims(np.array(co2_steps, dtype='int'), 1).T
-    light_steps = np.array(light_steps, dtype='int')
-    # light_steps = np.expand_dims(np.array(light_steps, dtype='int'), 1).T
-
     # find accession with minimum overall Anet values across both curves
     if acc_performance == 'min':
         acc_order_idx = 0  # accession with overall minimum Anet
@@ -229,11 +279,12 @@ def plot_anet_improvements_targets_individual(
         print('Replacing parameter with min/max value of the dataset.')
         
     a_co2_ode_targets_aco2, a_light_ode_targets_aco2 = simulate_parameter_updates(
-        pred_params.copy(), corr_a_co2, idx_relevant_a_co2, acc_idx, c4model, p_minmax)
+        pred_params.copy(), corr_a_co2, idx_relevant_a_co2, acc_idx, c4model,
+        p_minmax)
     
     a_co2_ode_targets_alight, a_light_ode_targets_alight = simulate_parameter_updates(
-        pred_params.copy(), corr_a_light, idx_relevant_a_light, acc_idx, c4model,
-        p_minmax)
+        pred_params.copy(), corr_a_light, idx_relevant_a_light, acc_idx,
+        c4model, p_minmax)
     
     # get/set plotting parameters
     text_fsz = get_plot_settings()
@@ -243,22 +294,25 @@ def plot_anet_improvements_targets_individual(
     # initialize figure
     fig, axs = plt.subplots(2, 2, layout='constrained', figsize=(6, 6))
     
+    
     # define paramter that should be plotted (maximum change across all steps)
     idx_target_plot_a_co2 = get_plot_idx(
         a_co2_ode_ref, a_light_ode_ref,
         a_co2_ode_targets_aco2, a_light_ode_targets_aco2)
-
+    
     # A/CO2 curve with updated targets from A/CO2 curve correlation
     axs[0, 0], ax_right_11 = plot_updated_curves(
         axs[0, 0], a_co2_ode_ref, 
-        a_co2_ode_targets_aco2[idx_target_plot_a_co2, :].T,
+        a_co2_ode_targets_aco2[idx_target_plot_a_co2, :],
         co2_steps, colors=colors)
     axs[0, 0].set_xticks([])
     
-    axs[0, 0].text(0.95, 0.1,
-                   p_names[idx_relevant_a_co2[idx_target_plot_a_co2]],
-                   fontsize=text_fsz, ha='right', 
-                   transform=axs[0, 0].transAxes)
+    if type(idx_relevant_a_co2[idx_target_plot_a_co2]) == np.int64:
+        # add parameter name to plot if only one is changed
+        axs[0, 0].text(0.95, 0.1,
+                       p_names[idx_relevant_a_co2[idx_target_plot_a_co2]],
+                       fontsize=text_fsz, ha='right', 
+                       transform=axs[0, 0].transAxes)
     
     # A/light curve with updated targets from A/CO2 curve correlation
     axs[0, 1], ax_right_12 = plot_updated_curves(
@@ -276,9 +330,12 @@ def plot_anet_improvements_targets_individual(
         axs[1, 0], a_co2_ode_ref, 
         a_co2_ode_targets_alight[idx_target_plot_a_light, :], 
         co2_steps, colors=colors)
-    axs[1, 0].text(0.95, 0.1, p_names[idx_relevant_a_light[idx_target_plot_a_light]],
-                               fontsize=text_fsz, ha='right', 
-                               transform=axs[1, 0].transAxes)
+    
+    if type(idx_relevant_a_co2[idx_target_plot_a_co2]) == np.int64:
+        axs[1, 0].text(0.95, 0.1, 
+                       p_names[idx_relevant_a_light[idx_target_plot_a_light]],
+                       fontsize=text_fsz, ha='right', 
+                       transform=axs[1, 0].transAxes)
     
     tmp_xlim = axs[1, 0].get_xlim()
     axs[1, 0].set_xticks(axs[1, 0].get_xticks()[1:],
@@ -362,7 +419,8 @@ def plot_anet_improvements_targets_individual(
 
 def get_parameter_optimization_summary(sim_results, corr_a_co2, corr_a_light,
                                        idx_relevant_a_co2, idx_relevant_a_light,
-                                       acc_idx, pred_params, param_names, p_minmax=None):
+                                       acc_idx,
+                                       pred_params, param_names, p_minmax=None):
     
     
     idx_target_plot_a_co2 = get_plot_idx(
@@ -392,74 +450,106 @@ def get_parameter_optimization_summary(sim_results, corr_a_co2, corr_a_light,
         sim_results['a_light_ode_targets_alight'][idx_target_plot_a_light],
         sim_results['a_light_ode_ref'].T)
     
-    if corr_a_co2[idx_relevant_a_co2[idx_target_plot_a_co2], :].min()>0:
-        if p_minmax is not None:
-            new_value = p_minmax[:, idx_relevant_a_co2[idx_target_plot_a_co2]].max()
-        else:
-            new_value = pred_params[:, idx_relevant_a_co2[idx_target_plot_a_co2]].max()
+    if type(idx_relevant_a_co2[idx_target_plot_a_co2]) == np.int64:
+        target_idx = [idx_relevant_a_co2[idx_target_plot_a_co2]]
+        use_max = False
     else:
-        if p_minmax is not None:
-            new_value = p_minmax[:, idx_relevant_a_co2[idx_target_plot_a_co2]].min()
-        else:
-            new_value = pred_params[:, idx_relevant_a_co2[idx_target_plot_a_co2]].min()
+        target_idx = idx_relevant_a_co2[idx_target_plot_a_co2]
+        use_max = True  # for Vcmax/Vomax 
     
-    print(f"Updating {param_names[idx_relevant_a_co2[idx_target_plot_a_co2]]} from "
-          f"{pred_params[acc_idx, idx_relevant_a_co2[idx_target_plot_a_co2]]:.2f} to {new_value:.2f} "
-          f"resulted in a change in Anet\nbetween {a_co2_increase_aco2.min():.2f} "
-          f"and {a_co2_increase_aco2.max():.2f}% for A/CO2 curves and\nbetween "
-          f"{a_light_increase_aco2.min():.2f} and {a_light_increase_aco2.max():.2f}% "
-          "for A/light curves")
-    
-    if corr_a_light[idx_relevant_a_light[idx_target_plot_a_light], :].min()>0:
-        if p_minmax is not None:
-            new_value = p_minmax[:, idx_relevant_a_light[idx_target_plot_a_light]].max()
+    for i in range(len(target_idx)):
+        if use_max:
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].max()
+            else:
+                new_value = pred_params[:, target_idx[i]].max()
+        elif corr_a_co2[target_idx[i], :].min()>0:
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].max()
+            else:
+                new_value = pred_params[:, target_idx[i]].max()
         else:
-            new_value = pred_params[:, idx_relevant_a_light[idx_target_plot_a_light]].max()
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].min()
+            else:
+                new_value = pred_params[:, target_idx[i]].min()
+
+        print(f"Updating {param_names[target_idx[i]]} from "
+              f"{pred_params[acc_idx, target_idx[i]]:.2f} to {new_value:.2f} "
+              f"resulted in a change in Anet\nbetween {a_co2_increase_aco2.min():.2f} "
+              f"and {a_co2_increase_aco2.max():.2f}% for A/CO2 curves and\nbetween "
+              f"{a_light_increase_aco2.min():.2f} and {a_light_increase_aco2.max():.2f}% "
+              "for A/light curves")
+    
+    if type(idx_relevant_a_light[idx_target_plot_a_light]) == np.int64:
+        target_idx = [idx_relevant_a_light[idx_target_plot_a_light]]
+        use_max = False  
     else:
-        if p_minmax is not None:
-            new_value = p_minmax[:, idx_relevant_a_light[idx_target_plot_a_light]].min()
+        target_idx = idx_relevant_a_light[idx_target_plot_a_light]
+        use_max = True  # for Vcmax/Vomax 
+    
+    for i in range(len(target_idx)):
+        if use_max:
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].max()
+            else:
+                new_value = pred_params[:, target_idx[i]].max()
+        elif corr_a_light[target_idx[i], :].min()>0:
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].max()
+            else:
+                new_value = pred_params[:, target_idx[i]].max()
         else:
-            new_value = pred_params[:, idx_relevant_a_light[idx_target_plot_a_light]].min()
-            
-    print(f"Updating {param_names[idx_relevant_a_light[idx_target_plot_a_light]]} from "
-          f"{pred_params[acc_idx, idx_relevant_a_light[idx_target_plot_a_light]]:.2f} to {new_value:.2f} "
-          f"resulted in a change in Anet\nbetween {a_co2_increase_alight.min():.2f} "
-          f"and {a_co2_increase_alight.max():.2f}% for A/CO2 curves and\nbetween "
-          f"{a_light_increase_alight.min():.2f} and {a_light_increase_alight.max():.2f}% "
-          "for A/light curves")
+            if p_minmax is not None:
+                new_value = p_minmax[:, target_idx[i]].min()
+            else:
+                new_value = pred_params[:, target_idx[i]].min()
+
+        print(f"Updating {param_names[target_idx[i]]} from " +
+              f"{pred_params[acc_idx, target_idx[i]]:.2f} to {new_value:.2f} "
+              f"resulted in a change in Anet\nbetween {a_co2_increase_alight.min():.2f} "
+              f"and {a_co2_increase_alight.max():.2f}% for A/CO2 curves and\nbetween "
+              f"{a_light_increase_alight.min():.2f} and {a_light_increase_alight.max():.2f}% "
+              "for A/light curves")
     
-    df_targets_aco2 = create_result_df(pred_params.copy(), param_names, corr_a_co2,
-                     idx_relevant_a_co2, acc_idx,
-                     get_percent_increase(sim_results['a_co2_ode_targets_aco2'],
-                                          sim_results['a_co2_ode_ref']),
-                     get_percent_increase(sim_results['a_light_ode_targets_aco2'],
-                                          sim_results['a_light_ode_ref']),
-                     sim_results['a_co2_ode_targets_aco2'] - sim_results['a_co2_ode_ref'],
-                     sim_results['a_light_ode_targets_aco2'] - sim_results['a_light_ode_ref'],
-                     p_minmax)
-    df_targets_alight = create_result_df(pred_params.copy(), param_names, corr_a_light,
-                     idx_relevant_a_light, acc_idx,
-                     get_percent_increase(sim_results['a_co2_ode_targets_alight'],
-                                          sim_results['a_co2_ode_ref']),
-                     get_percent_increase(sim_results['a_light_ode_targets_alight'],
-                                         sim_results['a_light_ode_ref']),
-                     sim_results['a_co2_ode_targets_alight'] - sim_results['a_co2_ode_ref'],
-                     sim_results['a_light_ode_targets_alight'] - sim_results['a_light_ode_ref'],
-                     p_minmax)
+    if type(idx_relevant_a_co2[idx_target_plot_a_co2]) == np.int64:
+        df_targets_aco2 = create_result_df(pred_params.copy(), param_names, corr_a_co2,
+                         idx_relevant_a_co2, acc_idx,
+                         get_percent_increase(sim_results['a_co2_ode_targets_aco2'],
+                                              sim_results['a_co2_ode_ref'].T),
+                         get_percent_increase(sim_results['a_light_ode_targets_aco2'],
+                                              sim_results['a_light_ode_ref'].T),
+                         sim_results['a_co2_ode_targets_aco2'] - sim_results['a_co2_ode_ref'].T,
+                         sim_results['a_light_ode_targets_aco2'] - sim_results['a_light_ode_ref'].T,
+                         p_minmax)
+        df_targets_alight = create_result_df(pred_params.copy(), param_names, corr_a_light,
+                         idx_relevant_a_light, acc_idx,
+                         get_percent_increase(sim_results['a_co2_ode_targets_alight'],
+                                              sim_results['a_co2_ode_ref'].T),
+                         get_percent_increase(sim_results['a_light_ode_targets_alight'],
+                                             sim_results['a_light_ode_ref'].T),
+                         sim_results['a_co2_ode_targets_alight'] - sim_results['a_co2_ode_ref'].T,
+                         sim_results['a_light_ode_targets_alight'] - sim_results['a_light_ode_ref'].T,
+                         p_minmax)
     
-    df_combined = pd.concat((df_targets_aco2, df_targets_alight))
+        df_combined = pd.concat((df_targets_aco2, df_targets_alight))
+        
+    else:
+        df_combined = pd.DataFrame
     
     return df_combined
     
 
 def simulate_improvements_targets_all_accessions(
-        a_co2, a_light, pred_params, corr_a_co2, corr_a_light, 
-        idx_relevant_a_co2, idx_relevant_a_light, co2_steps, light_steps, 
-        c4model, p_minmax=None):
+        a_co2, a_light, pred_params, c4model, corr_a_co2, corr_a_light, 
+        idx_relevant_a_co2, idx_relevant_a_light, p_minmax=None):
     
     n_accessions = a_co2.shape[0]
     n_targets_aco2 = len(idx_relevant_a_co2)
     n_targets_alight = len(idx_relevant_a_light)
+    
+    light_steps = [c4model.light_steps_simulation[i] for i in c4model.order_light_steps]
+    co2_steps = [c4model.co2_steps_simulation[i] for i in c4model.order_co2_steps]
     
     n_co2 = len(co2_steps)
     n_light = len(light_steps)
@@ -479,15 +569,15 @@ def simulate_improvements_targets_all_accessions(
         
         # ODE simulation with predicted parameter for the experimental measurement
         tmp_a_co2, tmp_a_light = c4model.simulate(pred_params[i, :].tolist())
-        a_co2_ode_ref[i, :] = tmp_a_co2[0, :].copy()
-        a_light_ode_ref[i, :] = tmp_a_light[0, :].copy()
+        a_co2_ode_ref[i, :] = tmp_a_co2.copy()
+        a_light_ode_ref[i, :] = tmp_a_light.copy()
         
         # replace each parameter identified in correlation analysis with the maximum or 
         # minimum across all accessions in the population and year            
         a_co2_ode_targets_aco2[i, :, :], a_light_ode_targets_aco2[i, :, :] = \
             simulate_parameter_updates(
-            pred_params.copy(), corr_a_co2, idx_relevant_a_co2, i,
-            c4model, p_minmax)
+            pred_params.copy(), corr_a_co2, idx_relevant_a_co2, i, c4model,
+            p_minmax)
         
         a_co2_ode_targets_alight[i, :, :], a_light_ode_targets_alight[i, :, :] = \
             simulate_parameter_updates(
@@ -510,13 +600,15 @@ def simulate_improvements_targets_all_accessions(
     
 
 def plot_sim_results_all_accessions(sim_results, param_names, a_co2, a_light,
-                                    idx_relevant_a_co2, idx_relevant_a_light,
-                                    co2_steps, light_steps):
+                                    idx_relevant_a_co2, idx_relevant_a_light):
     
     n_co2 = a_co2.shape[1]
     n_light = a_light.shape[1]
     n_accessions = a_co2.shape[0]
-
+    
+    light_steps = [c4model.light_steps_simulation[i] for i in c4model.order_light_steps]
+    co2_steps = [c4model.co2_steps_simulation[i] for i in c4model.order_co2_steps]
+    
     # select best target
     anet_diff_a_co2_targets = np.concatenate((
         sim_results['a_co2_ode_targets_aco2']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
@@ -524,7 +616,7 @@ def plot_sim_results_all_accessions(sim_results, param_names, a_co2, a_light,
         axis=2)
     median_anet_diff_a_co2_targets = np.nanmedian(anet_diff_a_co2_targets, axis=(0, 2))
     idx_best_target_a_co2 = np.argmax(median_anet_diff_a_co2_targets)
-    
+ 
     anet_diff_a_light_targets = np.concatenate((
         sim_results['a_co2_ode_targets_alight']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
         sim_results['a_light_ode_targets_alight']-np.expand_dims(sim_results['a_light_ode_ref'], 1)),
@@ -551,7 +643,7 @@ def plot_sim_results_all_accessions(sim_results, param_names, a_co2, a_light,
     fig, axs = plt.subplots(2, 3, figsize=(5, 7),
                             layout='constrained',
                             gridspec_kw={'width_ratios': [6, 6, 1]})
-    
+            
     axs[0, 0] = plot_anet_changes(co2_steps,
                                   anet_diff_a_co2_targets[:, idx_best_target_a_co2, :n_co2],
                                   np.repeat(cdata, n_co2), axs[0, 0])
@@ -568,13 +660,15 @@ def plot_sim_results_all_accessions(sim_results, param_names, a_co2, a_light,
                                   anet_diff_a_light_targets[:, idx_best_target_a_light, n_co2:],
                                   np.repeat(cdata, n_light), axs[1, 1])
     
-    axs[0, 1].text(0.95, 0.9, param_names[idx_relevant_a_co2[idx_best_target_a_co2]],
-                               fontsize=text_fsz, ha='right', 
-                               transform=axs[0, 1].transAxes)
-    if idx_best_target_a_co2 != idx_best_target_a_light:
+    if type(idx_relevant_a_co2[idx_best_target_a_co2]) == np.ndarray:
+        axs[0, 1].text(0.95, 0.9, param_names[idx_relevant_a_co2[idx_best_target_a_co2]],
+                                    fontsize=text_fsz, ha='right', 
+                                    transform=axs[0, 1].transAxes)
+    
+    if type(idx_relevant_a_light[idx_best_target_a_light]) == np.ndarray:
         axs[1, 1].text(0.95, 0.9, param_names[idx_relevant_a_light[idx_best_target_a_light]],
-                                   fontsize=text_fsz, ha='right', 
-                                   transform=axs[1, 1].transAxes)
+                                    fontsize=text_fsz, ha='right', 
+                                    transform=axs[1, 1].transAxes)
     
     axs[1, 0].set_xlabel(r"$p(CO_{2})\ (\mu bar)$")
     axs[1, 1].set_xlabel("light intensity"
@@ -634,8 +728,10 @@ def filter_sim_results(sim_results):
     return sim_results
     
 def write_optimization_summary_all_acc_excel(
-        file_name, sim_results, idx_relevant_a_co2, idx_relevant_a_light,
-        param_names, co2_steps, light_steps):
+        file_name, sim_results, idx_relevant_a_co2, idx_relevant_a_light, param_names):
+    
+    light_steps = [c4model.light_steps_simulation[i] for i in c4model.order_light_steps]
+    co2_steps = [c4model.co2_steps_simulation[i] for i in c4model.order_co2_steps]
     
     with pd.ExcelWriter(file_name) as writer:
         
@@ -751,77 +847,6 @@ def write_optimization_summary_all_acc_excel(
                         sheet_name="Percent changes stepwise",
                         float_format='%.2f', startrow=0, index_label="Parameter")
 
-np.random.seed(123)
-torch.manual_seed(321)
-
-plt.rc('font', size=14)
-plt.rc('legend', fontsize=10)
-
-# load base configuration
-base_config_file = "../config/base.yaml"
-base_config = OmegaConf.load(base_config_file)
-
-result_dir = os.path.join(base_config.paths.base_dir, "results",
-                         "analysis_limiting_factors", "test")
-param_dir = os.path.join(base_config.paths.base_dir, "results",
-                         "parameter_prediction_maize_genotypes")
-data_dir = os.path.join(base_config.paths.base_dir, "data",
-                         "anet_measurements")
-
-#%% Load experimental data
-a_co2_2022 = pd.read_csv(os.path.join(data_dir, "a_co2_maize_2022.csv"), index_col=0)
-a_co2_2023 = pd.read_csv(os.path.join(data_dir, "a_co2_maize_2023.csv"), index_col=0)
-a_light_2022 = pd.read_csv(os.path.join(data_dir, "a_light_maize_2022.csv"), index_col=0)
-a_light_2023 = pd.read_csv(os.path.join(data_dir, "a_light_maize_2023.csv"), index_col=0)
-
-#%% Load predicted parameters
-params_2022 = pd.read_csv(os.path.join(param_dir, "params_2022.csv"), index_col=0).to_numpy()
-params_2023 = pd.read_csv(os.path.join(param_dir, "params_2023.csv"), index_col=0).to_numpy()
-
-#%% Create C4TUNE predictor
-
-base_config_file = "../config/base.yaml"
-c4tune_config_file = "../config/c4tune.yaml"
-config_c4tune = get_config(base_config_file, c4tune_config_file)
-
-c4tune_checkpoint = os.path.join(config_c4tune.paths.run_dir, "2025-03-21", "c4tune-epoch-60.pth")
-
-# Load Cholesky decomposition matrix and change the model's property
-L = np.loadtxt(config_c4tune.paths.cholesky_test, delimiter=',')
-
-# create C4TUNE and surrogate model predictors
-set_training_environment(config_c4tune)
-device = torch.device(config_c4tune.training.device if torch.cuda.is_available() else "cpu")
-
-c4tune_model = ParameterPredictionModel(config_c4tune.model, L=FloatTensor(L))
-
-c4tune = C4tunePredictor(c4tune_model, c4tune_checkpoint, device, config_c4tune)
-
-#%% Load sampling results
-
-# read the dataset and indices of the test set
-dataset = PhotResponseDataset(config_c4tune.paths.datasets)
-idx_test = np.load(config_c4tune.paths.datasets.test_idx)
-co2_steps = np.array(dataset.a_co2.columns)
-light_steps = np.array(dataset.a_light.columns)
-n_co2 = len(co2_steps)
-n_light = len(light_steps)
-
-# parameter names
-param_names = load_param_names(base_config)
-param_ids = dataset.params.columns.values
-n_params = len(param_names)
-
-#%% Correlation between steps of A/CO2 and A/light curves
-
-# pairwise Pearson correlation between steps of A/CO2 and A/light curves
-r_p_a_co2_2022 = np.corrcoef(a_co2_2022.T)
-r_p_a_light_2022 = np.corrcoef(a_light_2022.T)
-r_p_a_co2_2023 = np.corrcoef(a_co2_2023.T)
-r_p_a_light_2023 = np.corrcoef(a_light_2023.T)
-
-#%%  Pearson correlation between log-transformed parameters values and Anet 
-
 # thresholds for relevant correlations
 t_a_co2_2022 = get_corr_threshold(r_p_a_co2_2022)
 t_a_light_2022 = get_corr_threshold(r_p_a_light_2022)
@@ -839,8 +864,6 @@ corr_a_light_2023 = np.corrcoef(
     np.concatenate((np.log(params_2023), a_light_2023), axis=1).T)[:n_params, -n_light:]
 
 # joint plot with Anet pairwise correlations
-
-# number of parameters to plot
 n_plot = 15
 
 # 2022
@@ -849,7 +872,7 @@ fig_corr_2022, axs_corr_2022 = plt.subplots(2, 2, figsize=(8, 5), layout='constr
 sns.set(rc={'font.size': 10, 'legend.fontsize': 10})
 sns.heatmap(r_p_a_co2_2022, ax=axs_corr_2022[0, 0],
             xticklabels=[],
-            yticklabels=co2_steps,
+            yticklabels=a_co2_2022.columns.values,
             cbar_kws={"label": "Pearson r", "aspect": 5, "location":"left"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -858,7 +881,7 @@ axs_corr_2022[0, 0].set_ylabel(r"$p(CO_{2})\ (\mu bar)$")
 
 axs_corr_2022[0, 1] = sns.heatmap(r_p_a_light_2022, ax=axs_corr_2022[0, 1],
             xticklabels=[],
-            yticklabels=light_steps,
+            yticklabels=a_light_2022.columns.values,
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
             cbar=False)
@@ -877,7 +900,7 @@ axs_corr_2022[1, 0] = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2022[1, 0],
                 vmin=-1, vmax=1,
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=co2_steps,
+                xticklabels=a_co2_2022.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 axs_corr_2022[1, 0] = add_indicator_high_corr(axs_corr_2022[1, 0], 
@@ -898,7 +921,7 @@ axs_corr_2022[1, 1] = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2022[1, 1],
                 vmin=-1, vmax=1,
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=light_steps,
+                xticklabels=a_light_2022.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 axs_corr_2022[1, 1] = add_indicator_high_corr(axs_corr_2022[1, 1],
@@ -918,7 +941,7 @@ fig_corr_2023, axs_corr_2023 = plt.subplots(2, 2, figsize=(8, 5), layout='constr
 sns.set(rc={'font.size': 10, 'legend.fontsize': 10})
 axs_corr_2023[0, 0] = sns.heatmap(r_p_a_co2_2023, ax=axs_corr_2023[0, 0],
             xticklabels=[],
-            yticklabels=co2_steps,
+            yticklabels=a_co2_2023.columns.values,
             cbar_kws={"label": "Pearson r", "aspect": 5, "location":"left"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -927,7 +950,7 @@ axs_corr_2023[0, 0].set_ylabel(r"$p(CO_{2})\ (\mu bar)$")
 
 axs_corr_2023[0, 1] = sns.heatmap(r_p_a_light_2023, ax=axs_corr_2023[0, 1],
             xticklabels=[],
-            yticklabels=light_steps,
+            yticklabels=a_light_2023.columns.values,
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
             cbar=False)
@@ -946,7 +969,7 @@ axs_corr_2023[1, 0] = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2023[1, 0],
                 vmin=-1, vmax=1,
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=co2_steps,
+                xticklabels=a_co2_2023.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 axs_corr_2023[1, 0] = add_indicator_high_corr(axs_corr_2023[1, 0],
@@ -968,7 +991,7 @@ axs_corr_2023[1, 1] = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2023[1, 1],
                 vmin=-1, vmax=1,
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=light_steps,
+                xticklabels=a_light_2023.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 axs_corr_2023[1, 1] = add_indicator_high_corr(axs_corr_2023[1, 1],
@@ -1004,7 +1027,7 @@ fig_corr_2022_relevant, axs_corr_2022_relevant = plt.subplots(2, 2, figsize=(15,
 sns.set(font_scale=1.5)
 g = sns.heatmap(r_p_a_co2_2022, ax=axs_corr_2022_relevant[0, 0],
             xticklabels=[],
-            yticklabels=co2_steps,
+            yticklabels=a_co2_2022.columns.values,
             cbar_kws={"label": "Pearson r"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -1013,7 +1036,7 @@ g.set_ylabel(r"$p(CO_{2})\ (\mu bar)$")
 
 g = sns.heatmap(r_p_a_light_2022, ax=axs_corr_2022_relevant[0, 1],
             xticklabels=[],
-            yticklabels=light_steps,
+            yticklabels=a_light_2022.columns.values,
             cbar_kws={"label": "Pearson r", "location": "right"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -1032,7 +1055,7 @@ g = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2022_relevant[1, 0],
                 vmin=-1, vmax=1, cbar_kws={"label": "Pearson r"},
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=co2_steps,
+                xticklabels=a_co2_2022.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 g.set_xticklabels(g.get_xticklabels(), rotation=45, ha="right")
@@ -1048,13 +1071,14 @@ g = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2022_relevant[1, 1],
                 vmin=-1, vmax=1, cbar_kws={"label": "Pearson r"},
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=light_steps,
+                xticklabels=a_light_2022.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 g.set_xticklabels(g.get_xticklabels(), rotation=45, ha="right")
 g.set_xlabel(r"$light\ intensity\ (\mu mol\ m^{-2}\ s^{-1})$")
 
 fig_corr_2022_relevant.savefig(os.path.join(result_dir, "corr_param_anet_2022_relevant.png"), dpi=300)
+
 
 # most limiting (relevant) parameters across both curve types
 idx_intersect_2022 = np.intersect1d(idx_relevant_a_co2_2022, idx_relevant_a_light_2022)
@@ -1072,7 +1096,7 @@ fig_corr_2023_relevant, axs_corr_2023_relevant = plt.subplots(2, 2, figsize=(15,
 sns.set(font_scale=1.5)
 g = sns.heatmap(r_p_a_co2_2023, ax=axs_corr_2023_relevant[0, 0],
             xticklabels=[],
-            yticklabels=co2_steps,
+            yticklabels=a_co2_2023.columns.values,
             cbar_kws={"label": "Pearson r"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -1081,7 +1105,7 @@ g.set_ylabel(r"$p(CO_{2})\ (\mu bar)$")
 
 g = sns.heatmap(r_p_a_light_2023, ax=axs_corr_2023_relevant[0, 1],
             xticklabels=[],
-            yticklabels=light_steps,
+            yticklabels=a_light_2023.columns.values,
             cbar_kws={"label": "Pearson r", "location": "right"},
             cmap=sns.color_palette("mako", as_cmap=True),
             vmin=-1.0, vmax=1.0,
@@ -1100,7 +1124,7 @@ g = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2023_relevant[1, 0],
                 vmin=-1, vmax=1, cbar_kws={"label": "Pearson r"},
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=co2_steps,
+                xticklabels=a_co2_2023.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 g.set_xticklabels(g.get_xticklabels(), rotation=45, ha="right")
@@ -1116,7 +1140,7 @@ g = sns.heatmap(plot_data[leaf_order, :],
                 ax=axs_corr_2023_relevant[1, 1],
                 vmin=-1, vmax=1, cbar_kws={"label": "Pearson r"},
                 cmap=sns.color_palette("mako", as_cmap=True),
-                xticklabels=light_steps,
+                xticklabels=a_light_2023.columns.values,
                 yticklabels=yticklabels,
                 cbar=False)
 g.set_xticklabels(g.get_xticklabels(), rotation=45, ha="right")
@@ -1137,17 +1161,16 @@ av_corr_intersect_2023_sort = av_corr_intersect_2023[order_corr_intersect_2023]
 
 #%% Update parameters identified by correlation analysis and re-run ODE model simulations
 
-# create Wrapper for C4 kinetic model simulation written in Matlab
-c4model = C4DynamicModel(base_config)
 
 # =============================================================================
-# Test targets
+# Test targets in selected genotypes
 # =============================================================================
 
 p_minmax = np.array([dataset.params.min().to_numpy(),
                       dataset.params.max().to_numpy()])
 
 vcmax_idx = 169  # Vm6
+vomax_idx = 193  # Vm38
 for year in ["2022", "2023"]:
     
         print(year)
@@ -1159,21 +1182,18 @@ for year in ["2022", "2023"]:
             # selected targets
             if year == "2022":
                 tmp_fig, _, sim_results, acc_idx = plot_anet_improvements_targets_individual(
-                    a_co2_2022, a_light_2022, params_2022, corr_a_co2_2022,
+                    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
                     corr_a_light_2022, idx_relevant_a_co2_2022, idx_relevant_a_light_2022,
-                    param_names, co2_steps, light_steps, c4model,
-                    p_minmax=p_minmax, acc_performance=acc_performance)
+                    param_names, p_minmax=p_minmax, acc_performance=acc_performance)
             else:
                 tmp_fig, _, sim_results, acc_idx = plot_anet_improvements_targets_individual(
-                    a_co2_2023, a_light_2023, params_2023, corr_a_co2_2023,
+                    a_co2_2023, a_light_2023, params_2023, c4model, corr_a_co2_2023,
                     corr_a_light_2023, idx_relevant_a_co2_2023, idx_relevant_a_light_2023,
-                    param_names, co2_steps, light_steps, c4model, 
-                    p_minmax=p_minmax, acc_performance=acc_performance)
+                    param_names, p_minmax=p_minmax, acc_performance=acc_performance)
                     
             
-            tmp_fig.savefig(
-                os.path.join(result_dir, "anet_updated_params_" + year + "_" + acc_performance + ".png"),
-                dpi=300)
+            tmp_fig.savefig(os.path.join(result_dir, "anet_updated_params_" + year + "_" + acc_performance + ".png"),
+                        dpi=300)
             
             if year == "2022":
                 tmp_df_combined = get_parameter_optimization_summary(
@@ -1186,64 +1206,59 @@ for year in ["2022", "2023"]:
                         idx_relevant_a_co2_2023, idx_relevant_a_light_2023,
                         acc_idx, params_2023, param_names, p_minmax=p_minmax)
             
-            tmp_df_combined.to_csv(
-                os.path.join(result_dir, "param_update_simulation_results_" + 
-                             year + "_" + acc_performance + ".csv"))
+            tmp_df_combined.to_csv(os.path.join(result_dir, "param_update_simulation_results_" + year + "_" +
+                                    acc_performance + ".csv"))
             print("")
             
-            # Rubicso Vcmax
+            # Rubicso content
             if year == "2022":
                 tmp_fig, _, sim_results, acc_idx = plot_anet_improvements_targets_individual(
-                    a_co2_2022, a_light_2022, params_2022, corr_a_co2_2022,
-                    corr_a_light_2022, [vcmax_idx], [vcmax_idx],
-                    param_names, co2_steps, light_steps, c4model,
-                    p_minmax=p_minmax, acc_performance=acc_performance)
+                    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
+                    corr_a_light_2022, [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]],
+                    param_names, p_minmax=p_minmax, acc_performance=acc_performance)
             else:
                 tmp_fig, _, sim_results, acc_idx = plot_anet_improvements_targets_individual(
-                    a_co2_2023, a_light_2023, params_2023, corr_a_co2_2023,
-                    corr_a_light_2023, [vcmax_idx], [vcmax_idx],
-                    param_names, co2_steps, light_steps, c4model,
-                    p_minmax=p_minmax, acc_performance=acc_performance)
+                    a_co2_2023, a_light_2023, params_2023, c4model, corr_a_co2_2023,
+                    corr_a_light_2023, [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]],
+                    param_names, p_minmax=p_minmax, acc_performance=acc_performance)
             
-            tmp_fig.savefig(
-                os.path.join(result_dir, "anet_updated_vcmax_" + year + "_" + acc_performance + ".png"),
-                dpi=300)
+            tmp_fig.savefig(os.path.join(result_dir, "anet_updated_rubisco_content_" + year + "_" + acc_performance + ".png"),
+                        dpi=300)
             
             if year == "2022":
                 tmp_df_combined = get_parameter_optimization_summary(
                         sim_results, corr_a_co2_2022, corr_a_light_2022,
-                        [vcmax_idx], [vcmax_idx], acc_idx, params_2022.numpy(), 
+                        [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]],
+                        acc_idx, params_2022, 
                         param_names, p_minmax=p_minmax)
             else:
                 tmp_df_combined = get_parameter_optimization_summary(
                     sim_results, corr_a_co2_2023, corr_a_light_2023,
-                    [vcmax_idx], [vcmax_idx], acc_idx, params_2023.numpy(), 
+                    [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]],
+                    acc_idx, params_2023, 
                     param_names, p_minmax=p_minmax)
             
-            tmp_df_combined.to_csv(
-                os.path.join(result_dir, "vcmax_update_simulation_results_" + 
-                             year + "_" + acc_performance + ".csv"))
+            # tmp_df_combined.to_csv(os.path.join(result_dir, "rubisco_content_update_simulation_results_" + year + "_" +
+            #                         acc_performance + ".csv"))
             print("")
 
 # =============================================================================
-# Simulate parameter updates across all genotypes
+# Test targets across all genotypes
 # =============================================================================
-# across all accessions
 
 # selected targets, 2022
 sim_results_2022 = simulate_improvements_targets_all_accessions(
-    a_co2_2022, a_light_2022, params_2022.numpy(), corr_a_co2_2022,
+    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
     corr_a_light_2022, idx_relevant_a_co2_2022, idx_relevant_a_light_2022,
-    co2_steps, light_steps, c4model, None)
+    None)
 np.save(os.path.join(result_dir, "param_opt_all_acc_2022"), sim_results_2022)
 
-sim_results_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_2022.npy"), 
-                           allow_pickle=True).item()
+sim_results_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_2022.npy"), allow_pickle=True).item()
 sim_results_2022 = filter_sim_results(sim_results_2022)
 
 fig_opt_all_acc_2022, _ = plot_sim_results_all_accessions(
     sim_results_2022, param_names, a_co2_2022, a_light_2022,
-    idx_relevant_a_co2_2022, idx_relevant_a_light_2022, co2_steps, light_steps)
+    idx_relevant_a_co2_2022, idx_relevant_a_light_2022)
 fig_opt_all_acc_2022.savefig(os.path.join(result_dir, "anet_change_selected_targets_all_acc_2022.png"),
                               bbox_inches='tight',
                               dpi=300)
@@ -1251,35 +1266,32 @@ fig_opt_all_acc_2022.savefig(os.path.join(result_dir, "anet_change_selected_targ
 file_name = os.path.join(result_dir, "parmeter_optimization_summary_2022.xlsx")
 write_optimization_summary_all_acc_excel(
     file_name, sim_results_2022, idx_relevant_a_co2_2022, 
-    idx_relevant_a_light_2022, param_names, co2_steps, light_steps)
+    idx_relevant_a_light_2022, param_names)
 
 # Vcmax, 2022
 sim_results_vcmax_2022 = simulate_improvements_targets_all_accessions(
-    a_co2_2022, a_light_2022, params_2022.numpy(), corr_a_co2_2022,
-    corr_a_light_2022, [vcmax_idx], [vcmax_idx], co2_steps, light_steps, c4model, None)
-np.save(os.path.join(result_dir, "param_opt_all_acc_vcmax_2022"), sim_results_vcmax_2022)
+    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
+    corr_a_light_2022, [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]], None)
+np.save(os.path.join(result_dir, "param_opt_all_acc_rubisco_content_2022"), sim_results_vcmax_2022)
 
-sim_results_vcmax_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_vcmax_2022.npy"),
-                                 allow_pickle=True).item()
+sim_results_vcmax_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_rubisco_content_2022.npy"), allow_pickle=True).item()
 sim_results_vcmax_2022 = filter_sim_results(sim_results_vcmax_2022)
 
 fig_opt_all_acc_vcmax_2022, _ = plot_sim_results_all_accessions(
     sim_results_vcmax_2022, param_names, a_co2_2022, a_light_2022,
-    [vcmax_idx], [vcmax_idx])
-fig_opt_all_acc_vcmax_2022.savefig(os.path.join(result_dir, "anet_change_vcmax_all_acc_2022.png"),
+    [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]])
+fig_opt_all_acc_vcmax_2022.savefig(os.path.join(result_dir, "anet_change_rubisco_content_all_acc_2022.png"),
                                     bbox_inches='tight',
                                     dpi=300)
 
-file_name = os.path.join(result_dir, "parmeter_optimization_vcmax_summary_2022.xlsx")
-write_optimization_summary_all_acc_excel(
-    file_name, sim_results_vcmax_2022, [vcmax_idx], [vcmax_idx], param_names,
-    co2_steps, light_steps)
+# file_name = os.path.join(result_dir, "parameter_optimization_rubisco_content_summary_2022.xlsx")
+# write_optimization_summary_all_acc_excel(
+#     file_name, sim_results_vcmax_2022, [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]], param_names)
 
 # selected targets, 2022, dataset values
 sim_results_dataset_2022 = simulate_improvements_targets_all_accessions(
-    a_co2_2022, a_light_2022, params_2022, corr_a_co2_2022,
-    corr_a_light_2022, idx_relevant_a_co2_2022, idx_relevant_a_light_2022,
-    co2_steps, light_steps, c4model, p_minmax)
+    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
+    corr_a_light_2022, idx_relevant_a_co2_2022, idx_relevant_a_light_2022, p_minmax)
 np.save(os.path.join(result_dir, "param_opt_all_acc_dataset_2022"), sim_results_dataset_2022)
 
 sim_results_dataset_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_dataset_2022.npy"), 
@@ -1288,77 +1300,24 @@ sim_results_dataset_2022 = filter_sim_results(sim_results_dataset_2022)
 
 fig_opt_all_acc_dataset_2022, _ = plot_sim_results_all_accessions(
     sim_results_dataset_2022, param_names, a_co2_2022, a_light_2022,
-    idx_relevant_a_co2_2022, idx_relevant_a_light_2022, co2_steps, light_steps)
+    idx_relevant_a_co2_2022, idx_relevant_a_light_2022)
 fig_opt_all_acc_dataset_2022.savefig(
-    os.path.join(result_dir, "anet_change_selected_targets_all_acc_dataset_2022.png"),
+    os.path.join(result_dir, "anet_change_selected_targets_all_acc_dataset_2022_fkfbp_ki.png"),
     dpi=300, bbox_inches='tight')
 
 # Vcmax, 2022, dataset values
 sim_results_vcmax_dataset_2022 = simulate_improvements_targets_all_accessions(
-    a_co2_2022, a_light_2022, params_2022, corr_a_co2_2022,
-    corr_a_light_2022, [vcmax_idx], [vcmax_idx], co2_steps, light_steps, c4model, 
-    p_minmax)
-np.save(os.path.join(result_dir, "param_opt_all_acc_vcmax_dataset_2022"),
-        sim_results_vcmax_dataset_2022)
+    a_co2_2022, a_light_2022, params_2022, c4model, corr_a_co2_2022,
+    corr_a_light_2022, [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]], p_minmax)
+np.save(os.path.join(result_dir, "param_opt_all_acc_rubisco_content_dataset_2022"), sim_results_vcmax_dataset_2022)
 
-sim_results_vcmax_dataset_2022 = np.load(
-    os.path.join(result_dir, "param_opt_all_acc_vcmax_dataset_2022.npy"), 
-    allow_pickle=True).item()
+sim_results_vcmax_dataset_2022 = np.load(os.path.join(result_dir, "param_opt_all_acc_rubisco_content_dataset_2022.npy"), 
+                                          allow_pickle=True).item()
 sim_results_vcmax_dataset_2022 = filter_sim_results(sim_results_vcmax_dataset_2022)
 
 fig_opt_all_acc_vcmax_dataset_2022, _ = plot_sim_results_all_accessions(
     sim_results_vcmax_dataset_2022, param_names, a_co2_2022, a_light_2022,
-    [vcmax_idx], [vcmax_idx], co2_steps, light_steps)
+    [[vcmax_idx, vomax_idx]], [[vcmax_idx, vomax_idx]])
 fig_opt_all_acc_vcmax_dataset_2022.savefig(
-    os.path.join(result_dir, "anet_change_vcmax_dataset_all_acc_2022.png"),
-    dpi=300, bbox_inches='tight')
+    os.path.join(result_dir, "anet_change_rubisco_content_dataset_all_acc_2022.png"), dpi=300, bbox_inches='tight')
 
-
-
-# def save_complete_optimization_results_excel(
-#         filename, sim_results, idx_relevant_a_co2, idx_relevant_a_light):
-    
-#     anet_diff_a_co2_targets = np.concatenate((
-#         sim_results['a_co2_ode_targets_aco2']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
-#         sim_results['a_light_ode_targets_aco2']-np.expand_dims(sim_results['a_light_ode_ref'], 1)),
-#         axis=2)
-    
-#     anet_diff_a_light_targets = np.concatenate((
-#         sim_results['a_co2_ode_targets_alight']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
-#         sim_results['a_light_ode_targets_alight']-np.expand_dims(sim_results['a_light_ode_ref'], 1)),
-#         axis=2)
-    
-#     anet_ratios_a_co2_targets = np.concatenate((
-#         sim_results['a_co2_ode_targets_aco2']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
-#         sim_results['a_light_ode_targets_aco2']-np.expand_dims(sim_results['a_light_ode_ref'], 1)),
-#         axis=2)
-    
-#     anet_ratios_a_light_targets = np.concatenate((
-#         sim_results['a_co2_ode_targets_alight']-np.expand_dims(sim_results['a_co2_ode_ref'], 1),
-#         sim_results['a_light_ode_targets_alight']-np.expand_dims(sim_results['a_light_ode_ref'], 1)),
-#         axis=2)
-    
-    
-#     sim_q, q_order, sim_co2, co2_order = get_env_inputs()
-#     light_steps = [sim_q[i] for i in q_order]
-#     co2_steps = [sim_co2[i] for i in co2_order]
-    
-    
-#     with pd.ExcelWriter(file_name) as writer:
-#         for i in range(len(idx_relevant_a_co2_2022)):
-#             tmp_df = pd.concat(
-#                 {
-#                     "A/CO2 (umol/m2/s)": pd.DataFrame(anet_diff_a_light_targets[:, i, :n_co2],
-#                                                       columns=co2_steps,
-#                                                       index=a_co2_2022.index),
-#                     "A/light (umol/m2/s)": pd.DataFrame(anet_diff_a_light_targets[:, i, n_co2:],
-#                                                         columns=light_steps,
-#                                                         index=a_light_2022.index)
-#                 }, axis=1)
-#             tmp_df.to_excel(writer, 
-#                             sheet_name=param_names[idx_relevant_a_co2_2022[i]].replace("[", "(").replace("]", ")"),
-#                             float_format='%.2f', startrow=0, index_label="Accession")
-
-
-# file_name = os.path.join(result_dir, "anet_diff_targets_results_2022.xlsx")
-# save_complete_optimization_results_excel(file_name)

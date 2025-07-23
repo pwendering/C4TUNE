@@ -20,6 +20,7 @@ from src.models.model_surrogate import SurrogateModel
 from src.prediction.surrogate_predictor import SurrogatePredictor
 from src.utils.env_setup import set_training_environment, get_config
 from src.utils.utils import load_param_names
+from src.utils.paths import PROJECT_ROOT
 from src.data.data import PhotResponseDataset
 
 
@@ -28,8 +29,8 @@ from src.data.data import PhotResponseDataset
 # =============================================================================
 
 # get surrogate model configuration
-base_config_file = "../config/base.yaml"
-model_config_file = "../config/surrogate.yaml"
+base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
+model_config_file = os.path.join(PROJECT_ROOT, "config/surrogate.yaml")
 config = get_config(base_config_file, model_config_file)
 
 # numpy random seed 
@@ -60,7 +61,7 @@ idx_samples = np.random.choice(idx_test,
                                replace=False)
 
 # output directory
-result_dir = os.path.join(config.paths.base_dir, "results", "surrogate_model")
+result_dir = os.path.join(PROJECT_ROOT, "results", "surrogate_model")
 
 # =============================================================================
 #%% Predict curves for random subset of the test set 
@@ -249,7 +250,7 @@ print(f"Pearson correlation of R2 values between curve types: r={r_p_r2:.2f}")
 #%% Train random forest model to find factors that impact surrogate model MSE
 # =============================================================================
 
-param_names = load_param_names(config)
+param_names = load_param_names()
 param_ids = dataset.params.columns.values
 
 np.random.seed(1)

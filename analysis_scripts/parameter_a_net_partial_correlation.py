@@ -21,6 +21,8 @@ from omegaconf import OmegaConf
 sys.path.append(str(Path().resolve().parents[0]))
 
 from src.utils.utils import load_param_names
+from src.utils.paths import PROJECT_ROOT
+
 
 def empirical_pvalue(corr_ref, p_idx, params, anet, n_samples_pval=1000):
     
@@ -134,14 +136,14 @@ def plot_clustermap(corr_data, pval, xticklabels, param_names, cb=False,
 
 def main(config, n_samples_pval):
     
-    result_dir = os.path.join(config.paths.base_dir, "results",
+    result_dir = os.path.join(PROJECT_ROOT, "results",
                              "analysis_limiting_factors", "partial_correlation")
-    param_dir = os.path.join(config.paths.base_dir, "results",
+    param_dir = os.path.join(PROJECT_ROOT, "results",
                              "parameter_prediction_maize_genotypes")
-    data_dir = os.path.join(config.paths.base_dir, "data",
+    data_dir = os.path.join(PROJECT_ROOT, "data",
                              "anet_measurements")
     
-    param_names = load_param_names(config)
+    param_names = load_param_names()
     
     #%% Load predicted parameters
     params_2022 = pd.read_csv(os.path.join(param_dir, "params_2022.csv"), index_col=0).to_numpy()
@@ -232,7 +234,7 @@ if __name__ == '__main__':
     plt.rc('legend', fontsize=10)
     
     # load base configuration
-    base_config_file = "../config/base.yaml"
+    base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
     base_config = OmegaConf.load(base_config_file)
     
     main(base_config, n_samples_pval=10000)
