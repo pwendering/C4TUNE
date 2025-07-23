@@ -4,12 +4,13 @@ C4TUNE model trainer
 
 """
 
-from .base_trainer import BaseTrainer
+
 import numpy as np
 import torch
 from torch import FloatTensor
-from losses.losses import mean_relative_error_loss, SimulationLoss
-from utils.input_transform import prepare_model_inputs
+from src.training.base_trainer import BaseTrainer
+from src.losses.losses import mean_relative_error_loss, SimulationLoss
+from src.utils.input_transform import prepare_model_inputs
 
 class C4tuneTrainer(BaseTrainer):
     

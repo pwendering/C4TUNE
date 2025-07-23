@@ -10,20 +10,25 @@ class SurrogatePredictor(BasePredictor):
     
     def predict(self, parameters, env_input):
         
+        self.static_inputs = self._load_or_create_static_inputs(env_input)
+        
+        with torch.no_grad():
+            X = self._prepare_input(parameters)
+            output = self.model(**X)
+        
+        return [self._postprocess(x) for x in output]
+            
+    def _prepare_input(self, parameters):
+        
+        env_input = self.static_inputs['env_input']
+        data_stats = self.static_inputs['data_stats']
+        
         if isinstance(parameters, pd.DataFrame) or isinstance(parameters, np.ndarray):
             parameters = torch.FloatTensor(parameters)
         
         for k in env_input.keys():
             if isinstance(env_input[k], pd.DataFrame) or isinstance(env_input[k], np.ndarray):
                 env_input[k] = torch.FloatTensor(env_input[k])
-        
-        with torch.no_grad():
-            X = self._prepare_input(parameters, env_input)
-            output = self.model(**X)
-        
-        return [self._postprocess(x) for x in output]
-            
-    def _prepare_input(self, parameters, env_input):
         
         _, co2_steps, light_a_co2, _, light_steps, co2_a_light = \
             prepare_model_inputs(
@@ -32,7 +37,7 @@ class SurrogatePredictor(BasePredictor):
                 parameters.shape[0])
         
         X = {
-            "parameters": (parameters-self.data_stats['test']['p_av'])/self.data_stats['test']['p_sd'],
+            "parameters": (parameters-data_stats['test']['p_av'])/data_stats['test']['p_sd'],
             "env_inputs": [
                 torch.cat((co2_steps, light_a_co2), dim=-1),
                 torch.cat((light_steps, co2_a_light), dim=-1)

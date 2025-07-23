@@ -4,10 +4,10 @@ Surrogate model trainer
 
 """
 
-from .base_trainer import BaseTrainer
 import torch
-from losses.losses import mse_loss, MSEMonotonicityLoss
-from utils.input_transform import prepare_model_inputs
+from src.losses.losses import mse_loss, MSEMonotonicityLoss
+from src.utils.input_transform import prepare_model_inputs
+from src.training.base_trainer import BaseTrainer
 
 class SurrogateTrainer(BaseTrainer):
     

@@ -12,8 +12,8 @@ import time
 import tempfile
 from ray import train as raytrain
 from ray.train import Checkpoint
-from losses.losses import get_loss_function
-import training.saver as saver
+from src.losses.losses import get_loss_function
+import src.training.saver as saver
 from abc import ABC, abstractmethod
 
 

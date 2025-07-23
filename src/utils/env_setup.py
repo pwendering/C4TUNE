@@ -1,6 +1,7 @@
 
 import torch
 from omegaconf import OmegaConf
+from src.utils.paths import resolve_config_paths
 
 
 def set_training_environment(config):
@@ -39,4 +40,4 @@ def set_training_environment(config):
 def get_config(base_config_file, model_config_file):
     base_config = OmegaConf.load(base_config_file)
     model_config = OmegaConf.load(model_config_file)
-    return OmegaConf.merge(base_config, model_config)
+    return resolve_config_paths(OmegaConf.merge(base_config, model_config))

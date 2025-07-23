@@ -4,20 +4,17 @@ Neural Network training
 
 '''
 
+import os
 from omegaconf import OmegaConf
 import torch
 from data.data import create_train_test_sets
 from models.model_surrogate import SurrogateModel
 from utils.utils import load_and_freeze_model
 from utils.experiment_logger import ExperimentLogger
-from utils.env_setup import set_training_environment
+from utils.env_setup import set_training_environment, get_config
+from utils.paths import PROJECT_ROOT
 import argparse
 
-
-def get_config(base_config_file, model_config_file):
-    base_config = OmegaConf.load(base_config_file)
-    model_config = OmegaConf.load(model_config_file)
-    return OmegaConf.merge(base_config, model_config)
 
 def main(model_config_file, base_config_file):
     
@@ -52,10 +49,10 @@ def main(model_config_file, base_config_file):
     
 if __name__ == "__main__":
     
-    base_config_file = "../config/base.yaml"
+    base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="../config/surrogate.yaml",
+    parser.add_argument("--config", default=os.path.join(PROJECT_ROOT, "config/c4tune.yaml"),
                         help='Path to model-specific YAML configuration file')
     args = parser.parse_args()
     
