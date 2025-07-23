@@ -1,8 +1,8 @@
 paths:
-  base_dir: "/usr/bin/C4TUNE"
-  runs_base_dir: "${paths.base_dir}/outputs/runs/"
-  data_dir: "${paths.base_dir}/data/training_data"
-  matlab_code_dir:"${paths.base_dir}/matlab/C4_dynamic_model/simulation"
+  runs_base_dir: "outputs/runs/"
+  data_dir: "data/training_data"
+  matlab_code_dir: "matlab/C4_dynamic_model/simulation"
+  cache_dir: "outputs/cache"
   datasets:
     a_co2: "${paths.data_dir}/a_co2.csv"
     a_light: "${paths.data_dir}/a_light.csv"

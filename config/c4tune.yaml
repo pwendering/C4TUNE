@@ -3,6 +3,7 @@ paths:
   surrogate_checkpoint: "${paths.runs_base_dir}/surrogate/2025_02_21/surrogate-epoch-60.pth"
   cholesky_train: "${paths.data_dir}/L_train.csv"
   cholesky_test: "${paths.data_dir}/L_test.csv"
+  cache_file: "${paths.cache_dir}/c4tune.json"
   datasets:
     train_idx: "${paths.data_dir}/train_idx_c4tune.npy"
     test_idx: "${paths.data_dir}/test_idx_c4tune.npy"

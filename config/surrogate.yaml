@@ -1,5 +1,6 @@
 paths:
   run_dir: "${paths.runs_base_dir}/surrogate"
+  cache_file: "${paths.cache_dir}/surrogate.json"
   datasets:
     train_idx: "${paths.data_dir}/train_idx_surrogate.npy"
     test_idx: "${paths.data_dir}/test_idx_surrogate.npy"
