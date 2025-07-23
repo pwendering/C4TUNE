@@ -31,7 +31,23 @@ C4TUNE was used to predict parameters for a population of maize genotypes of a M
 
 2) Install the Python requirements in a virtual environment
 
-```conda env create -f environment.yml```
+```
+# create the environment
+conda env create -f environment.yml
+
+# activate the environment
+conda activate c4tune
+```
+
+
+3) (Optional) Install Matlab engine for python
+
+To be able to call the Matlab functions for curve simulation using the kinetic C<sub>4</sub> photosynthesis model, the Matlab engine must be installed.
+This is only relevant if you want to test predicted parameters using the original kinetic model without having to import them into Matlab.
+To install it, go to your Matlab installation directory:<br>
+```cd /path/to/MATLAB/<version>/extern/engines/python```<br>
+and run<br>
+```python -m pip install ``` .
 
 ### Training dataset 
 
