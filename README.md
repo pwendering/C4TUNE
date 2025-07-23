@@ -25,9 +25,12 @@ C4TUNE was used to predict parameters for a population of maize genotypes of a M
 
 ## Installation
 
-1) Clone the git repository
+1) Clone the git repository and change into the directory
    
-```git clone https://github.com/pwendering/C4TUNE```
+```
+git clone https://github.com/pwendering/C4TUNE
+cd C4TUNE
+```
 
 2) Install the Python requirements in a virtual environment
 
