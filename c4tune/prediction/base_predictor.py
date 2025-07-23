@@ -1,7 +1,7 @@
 
 import torch
 from abc import ABC, abstractclassmethod
-from src.utils.data_stats import compute_data_stats
+from c4tune.utils.data_stats import compute_data_stats
 import json
 from pathlib import Path
 
