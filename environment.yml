@@ -9,10 +9,13 @@ dependencies:
   - fsspec
   - matplotlib=3.10
   - scipy
-  - pip
   - scikit-learn
   - seaborn
   - pingouin
   - openpyxl
   - fastcluster
   - omegaconf
+  - pip
+  - pip:
+    - matlabengine
+    - -e ./src
