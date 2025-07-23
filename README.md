@@ -1,7 +1,12 @@
 # C4TUNE - C<sub>4</sub> TUNing Engine
 
 ## General description
-A detailed description can be found in the associated publication: \[REFERENCE\]
+A detailed description can be found in the associated publication:
+
+Preprint:
+**Kinetic parameter prediction using neural networks identifies limitations to C4 photosynthesis**<br>
+Philipp Wendering, John Ferguson, Rudan Xu, Johannes Kromdijk, Zoran Nikoloski
+bioRxiv 2025.07.16.665120; doi: [10.1101/2025.07.16.665120](https://doi.org/10.1101/2025.07.16.665120)
 
 This repository contains the code files of a neural network for the prediction of parameters of the C<sub>4</sub> dynamic photosynthesis model (Wang et al. 2021, doi: [10.1111/tpj.15365](https://doi.org/10.1111/tpj.15365)).
 
@@ -13,6 +18,11 @@ The training of C4TUNE was guided by minimizing a loss function, which involved 
 
 Since the curve simulation using the Matlab implementation of the C<sub>4</sub> photosynthesis model would have been too slow, we trained a surrogate model to predict A/CO<sub>2</sub> and A/light curves from parameter vectors and environmental inputs. The surrogate model is also a neural network that was trained on the same dataset.
 
+C4TUNE was used to predict parameters for a population of maize genotypes of a MAGIC population. The experimental measurements are publicly available:<br>
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15966533.svg)](https://doi.org/10.5281/zenodo.15966533)
+
+
 ## Installation
 
 1) Clone the git repository
@@ -23,14 +33,6 @@ Since the curve simulation using the Matlab implementation of the C<sub>4</sub> 
 
 ```conda env create -f environment.yml```
 
-To be able to run simulations with the C<sub>4</sub> kinetic model from within Python, you also need to install the module `matlabengine`:
-
-```pip install matlabengine```
-
-3) Set the path to the C4TUNE directory
-
-The base configuration file can be found at `config/base.yaml`. Set the value of `base_dir` to the absolute path of the C4TUNE directory: `/path/to/C4TUNE`.
-
 ### Training dataset 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15926601.svg)](https://doi.org/10.5281/zenodo.15926601)
@@ -40,6 +42,13 @@ The dataset is available at Zenodo with doi: 10.5281/zenodo.15926601.<br>
 Save the training dataset under `data/training_data` and make sure the uncompress the files before use.<br>
 
 ## Usage
+
+### Command line
+C4TUNE can be used via the command line:
+```
+python cli/c4tune_cli.py a_co2_measurements.csv a_light_measurements.csv
+```
+The required inputs are two CSV files containing the A<sub>net</sub> measurements at different CO<sub>2</sub> and light levels. Both files are expected to have a header line and an index column. Additional options can be viewed by running ```python cli/c4tune_cli.py --help```.
 
 ### Python script
 Here is a snippet showing the minimal steps to carry out parameter predictions:
@@ -63,12 +72,13 @@ from src.models.model_c4tune import ParameterPredictionModel
 from src.prediction.c4tune_predictor import C4tunePredictor
 from src.utils.env_setup import set_training_environment, get_config
 from src.data.data import PhotResponseDataset
+from src.utils.paths import PROJECT_ROOT
 
 # ===== Load model and data
 
 # get C4TUNE and surrogate model configurations
-base_config_file = "config/base.yaml"
-c4tune_config_file = "config/c4tune.yaml"
+base_config_file = os.path.join(PROJECT_ROOT, "config/base.yaml")
+c4tune_config_file = os.path.join(PROJECT_ROOT, "config/c4tune.yaml")
 config_c4tune = get_config(base_config_file, c4tune_config_file)
 
 # numpy random seed 
@@ -96,7 +106,7 @@ a_light_file = "a_light_measurements.csv"  # example file name
 a_co2 = pd.read_csv(a_co2_file)
 a_light = pd.read_csv(a_light_file)
 
-# ===== Predict parameters
+# ===== Predict parameters for random subset of the test set 
 
 env_input = {
     "co2_steps": dataset.co2_steps,
@@ -115,15 +125,12 @@ pred_params = c4tune.predict(curve_input, env_input)
 
 ```
 
-### Command line
-[To be added]
-
-### User interface
-[To be added]
-
 ## Re-training the model
 
 ### Parameter sampling and curve simulation
+[To be added]
+
+### Hyperparameter tuning
 [To be added]
 
 ### Neural network training
