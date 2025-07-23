@@ -1,0 +1,24 @@
+[project]
+name = "c4tune"
+version = "0.0.1"
+authors = [
+  { name="Philipp Wendering", email="philipp.wendering@gmail.com" },
+]
+description = "Parameter prediction for a C4 photosynthesis model"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/pwendering/C4TUNE"
+Issues = "https://github.com/pwendering/C4TUNE/issues"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
