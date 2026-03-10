@@ -72,8 +72,7 @@ result_dir = os.path.join(PROJECT_ROOT, "results",
                          "parameters_prediction_different_species")
 data_dir = os.path.join(PROJECT_ROOT, "data",
                          "anet_measurements")
-publication_dirs = ["Almeida2025", "Furbank1996", "Pengelly2012", 
-                    "Salesse-Smith2018"]
+publication_dirs = ["Almeida2025"]
 
 #%% Load synthetic dataset
 dataset = PhotResponseDataset(base_config.paths.datasets)
