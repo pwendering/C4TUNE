@@ -50,7 +50,7 @@ This is only relevant if you want to test predicted parameters using the origina
 To install it, go to your Matlab installation directory:<br>
 ```cd /path/to/MATLAB/<version>/extern/engines/python```<br>
 and run<br>
-```python -m pip install ``` .
+```python -m pip install .``` .
 
 ### Training dataset 
 
